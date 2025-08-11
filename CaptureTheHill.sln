@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureTheHill", "CaptureTheHill.csproj", "{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Debug|x64.ActiveCfg = Debug|x64
+		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Debug|x64.Build.0 = Debug|x64
+		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Release|x64.ActiveCfg = Release|x64
+		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CCB3B3AF-186A-429F-BDC9-4F69FAD19031}
+	EndGlobalSection
+EndGlobal
