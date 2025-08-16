@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ShipBlueprints>
     <ShipBlueprint xsi:type="MyObjectBuilder_ShipBlueprintDefinition">
       <Id Type="MyObjectBuilder_ShipBlueprintDefinition" Subtype="CaptureFlag" />
@@ -193,7 +193,7 @@
       </CubeGrids>
       <EnvironmentType>None</EnvironmentType>
       <WorkshopId>0</WorkshopId>
-      <OwnerSteamId>76561198071517783</OwnerSteamId>
+      <OwnerSteamId>111111111111</OwnerSteamId>
       <Points>0</Points>
     </ShipBlueprint>
   </ShipBlueprints>

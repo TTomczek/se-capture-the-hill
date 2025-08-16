@@ -8,7 +8,7 @@
         <CubeGrid>
           <SubtypeName />
           <EntityId>137285487862142933</EntityId>
-          <PersistentFlags>CastShadows InScene</PersistentFlags>
+          <PersistentFlags>InScene</PersistentFlags>
           <Name>137285487862142933</Name>
           <PositionAndOrientation>
             <Position x="0" y="0" z="0" />
@@ -181,7 +181,7 @@
             </MyObjectBuilder_CubeBlock>
           </CubeBlocks>
           <DisplayName>CaptureFlag</DisplayName>
-          <DestructibleBlocks>true</DestructibleBlocks>
+          <DestructibleBlocks>false</DestructibleBlocks>
           <CreatePhysics>false</CreatePhysics>
           <EnableSmallToLargeConnections>false</EnableSmallToLargeConnections>
           <IsRespawnGrid>false</IsRespawnGrid>
