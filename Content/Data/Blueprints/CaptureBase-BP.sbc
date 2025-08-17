@@ -2,7 +2,7 @@
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ShipBlueprints>
     <ShipBlueprint xsi:type="MyObjectBuilder_ShipBlueprintDefinition">
-      <Id Type="MyObjectBuilder_ShipBlueprintDefinition" Subtype="CaptureFlag" />
+      <Id Type="MyObjectBuilder_ShipBlueprintDefinition" Subtype="CaptureFlagBP" />
       <DisplayName>Capture Base</DisplayName>
       <CubeGrids>
         <CubeGrid>

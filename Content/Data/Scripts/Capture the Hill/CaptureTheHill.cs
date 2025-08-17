@@ -8,7 +8,6 @@ using Sandbox.ModAPI;
 using VRage;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
-using VRage.Utils;
 using VRageMath;
 using IMyEntity = VRage.ModAPI.IMyEntity;
 
@@ -21,7 +20,7 @@ namespace CaptureTheHill
         private static bool _isServer;
         private bool _printedOnce;
         private int _ticks;
-        private bool _debugMode = true;
+        private Dictionary<String, List<MyCubeGrid>> basesPerPlanet = new Dictionary<String, List<MyCubeGrid>>();
 
         public override void BeforeStart()
         {
@@ -111,7 +110,7 @@ namespace CaptureTheHill
                 {
                     var groundBasePosition =
                         planet.PositionComp.GetPosition() + new Vector3D(0, 0, planet.AverageRadius + 10);
-                    var groundBaseOrientation = Vector3D.Up;
+                    var groundBaseOrientation = Vector3.Up;
                     CreateCaptureBase(planet.Name, CaptureBaseType.GROUND, groundBasePosition, groundBaseOrientation);
                     Show("Created ground base for " + planet.Name);
                 }
@@ -120,7 +119,7 @@ namespace CaptureTheHill
                 {
                     var atmosphereBasePosition =
                         planet.PositionComp.GetPosition() + new Vector3D(0, 0, planet.AverageRadius + 10000);
-                    var atmosphereBaseOrientation = Vector3D.Up;
+                    var atmosphereBaseOrientation = Vector3.Up;
                     CreateCaptureBase(planet.Name, CaptureBaseType.ATMOSPHERE, atmosphereBasePosition,
                         atmosphereBaseOrientation);
                     Show("Created atmosphere base for " + planet.Name);
@@ -130,7 +129,7 @@ namespace CaptureTheHill
                 {
                     var spaceBasePosition = planet.PositionComp.GetPosition() +
                                             new Vector3D(0, 0, planet.AverageRadius + 25000);
-                    var spaceBaseOrientation = Vector3D.Up;
+                    var spaceBaseOrientation = Vector3.Up;
                     CreateCaptureBase(planet.Name, CaptureBaseType.SPACE, spaceBasePosition, spaceBaseOrientation);
                     Show("Created space base for " + planet.Name);
                 }
@@ -139,7 +138,6 @@ namespace CaptureTheHill
 
         private int GetExpectedPlanetBaseCount(float planetRadius)
         {
-
             if (planetRadius > 60)
             {
                 return 3;
@@ -148,65 +146,67 @@ namespace CaptureTheHill
             return planetRadius > 20 ? 2 : 1;
         }
 
-        public IMyCubeGrid CreateCaptureBase(
-            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D orientation)
+        private void CreateCaptureBase(
+            string planetName, CaptureBaseType baseType, Vector3D position, Vector3 orientation)
         {
-            if (string.IsNullOrEmpty(planetName) || position.IsZero() || orientation.IsZero())
+            if (string.IsNullOrEmpty(planetName) || position.IsZero())
             {
-                Show("Ungültige Parameter für Capture Base.");
-                return null;
+                Show($"Ungültige Parameter für {planetName}-capture-base-{baseType}.");
+                return;
             }
 
-            var worldMatrix = MatrixD.CreateWorld(position, Vector3.Forward, Vector3.Up);
-            var positionInWorld = worldMatrix.Translation;
-            var freePosition = MyEntities.FindFreePlace(positionInWorld, 50);
+            var freePosition = MyEntities.FindFreePlace(position, 20, 20, 5, 0.2f);
             if (freePosition == null)
             {
                 Show($"Kein freier Platz gefunden für Capture Base {baseType.ToString()} auf {planetName}.");
-                return null;
+                return;
             }
-            Show("Freier Platz gefunden: " + freePosition.Value);
+            
+            Vector3 fwd = Vector3.Normalize(orientation);
+            if (fwd.LengthSquared() < 1e-6f || Math.Abs(Vector3.Dot(fwd, Vector3.Up)) > 0.999f)
+            {
+                fwd = Vector3.Normalize((Vector3)Vector3D.CalculatePerpendicularVector(Vector3D.Up));
+            }
 
             try
             {
-
                 var captureBasePrefab = MyDefinitionManager.Static.GetPrefabDefinition("CTH_Capture_Base");
-                if (captureBasePrefab == null)
-                {
-                    Show($"Fehler beim Laden des Capture Base Prefabs für {planetName}.");
-                    return null;
-                }
-                
-                if (captureBasePrefab.CubeGrids.Length != 1)
-                {
-                    Show($"Fehler: Capture Base Prefab enthält falsche Anzahl an Grids ({captureBasePrefab.CubeGrids.Length}).");
-                    return null;
-                }
-                
-                captureBasePrefab.CubeGrids[0].Name = $"{planetName}-capture-base-{baseType.ToString().ToLower()}";
-                captureBasePrefab.CubeGrids[0].DisplayName = $"{planetName} Capture Base ({baseType})";
-                captureBasePrefab.CubeGrids[0].DestructibleBlocks = false;
-                captureBasePrefab.CubeGrids[0].Editable = false;
-                captureBasePrefab.CubeGrids[0].Immune = true;
-                captureBasePrefab.CubeGrids[0].IsNpcSpawnedGrid = true;
-                captureBasePrefab.CubeGrids[0].IsStatic = true;
-                captureBasePrefab.CubeGrids[0].PositionAndOrientation = new MyPositionAndOrientation(
-                    freePosition.Value,
-                    orientation,
-                    Vector3D.CalculatePerpendicularVector(orientation)
-                );
+                // if (captureBasePrefab == null)
+                // {
+                //     Show($"Fehler beim Laden des Capture Base Prefabs für {planetName}.");
+                //     return;
+                // }
+                //
+                // if (captureBasePrefab.CubeGrids.Length != 1)
+                // {
+                //     Show($"Fehler: Capture Base Prefab enthält falsche Anzahl an Grids ({captureBasePrefab.CubeGrids.Length}).");
+                //     return;
+                // }
+                //
+                // captureBasePrefab.CubeGrids[0].Name = $"{planetName}-capture-base-{baseType.ToString().ToLower()}";
+                // captureBasePrefab.CubeGrids[0].DisplayName = $"{planetName} Capture Base ({baseType})";
+                // captureBasePrefab.CubeGrids[0].DestructibleBlocks = false;
+                // captureBasePrefab.CubeGrids[0].Editable = false;
+                // captureBasePrefab.CubeGrids[0].Immune = true;
+                // captureBasePrefab.CubeGrids[0].IsNpcSpawnedGrid = true;
+                // captureBasePrefab.CubeGrids[0].IsStatic = true;
+                // captureBasePrefab.CubeGrids[0].PositionAndOrientation = new MyPositionAndOrientation(
+                //     freePosition.Value,
+                //     orientation,
+                //     Vector3D.Up
+                // );
                 
                 var spawnedGrids = new List<IMyCubeGrid>();
                 MyAPIGateway.PrefabManager.SpawnPrefab(
                     spawnedGrids,
                     "CTH_Capture_Base",
-                    positionInWorld,
-                    orientation,
+                    freePosition.Value,
+                    fwd,
                     Vector3.Up, 
                     Vector3.Zero,
                     Vector3.Zero,
-                    $"{planetName}-capture-base-{baseType.ToString().ToLower()}",
-                    SpawningOptions.UseOnlyWorldMatrix,
+                    null,
+                    SpawningOptions.None,
                     0,
                     true,
                     () =>
@@ -217,7 +217,6 @@ namespace CaptureTheHill
                 );
                 CreateGps(freePosition.Value, $"{planetName} Capture Base ({baseType})");
 
-                return null;
             }
             catch (Exception e)
             {
@@ -248,10 +247,7 @@ namespace CaptureTheHill
 
         private void Show(string text)
         {
-            if (_debugMode)
-            {
-                MyAPIGateway.Utilities.ShowMessage("CTH", text);
-            }
+            MyAPIGateway.Utilities.ShowMessage("CTH", text);
         }
     }
 }
