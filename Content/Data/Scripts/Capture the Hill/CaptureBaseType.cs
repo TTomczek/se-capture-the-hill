@@ -2,8 +2,8 @@
 {
     public enum CaptureBaseType
     {
-        GROUND,
-        ATMOSPHERE,
-        SPACE
+        Ground,
+        Atmosphere,
+        Space
     }
 }
