@@ -63,7 +63,7 @@ namespace CaptureTheHill
         {
             if (entity is IMyCubeGrid && entity.Name.Contains("-capture-base"))
             {
-                Show($"Entity hinzugefügt: {entity.Name}");
+                Logger.Info($"Created Capture Base: {entity.Name}");
             }
         }
 
@@ -92,7 +92,7 @@ namespace CaptureTheHill
 
                 if (basesOfPlanetCount == expectedPlanetBaseCount || basesOfPlanetCount > expectedPlanetBaseCount)
                 {
-                    Show("Bereits die erwartete Anzahl oder mehr Basen sind vorhanden für " + planet.Name);
+                    Logger.Info("Bereits die erwartete Anzahl oder mehr Basen sind vorhanden für " + planet.Name);
                     continue;
                 }
 
