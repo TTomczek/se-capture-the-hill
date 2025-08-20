@@ -5,6 +5,7 @@ using CaptureTheHill.logging;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
+using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.ModAPI;
 using VRageMath;
@@ -45,7 +46,7 @@ namespace CaptureTheHill
             if (_ticks == 300)
             {
                 var planets = new HashSet<IMyEntity>();
-                MyAPIGateway.Entities.GetEntities(planets, e => e is MyPlanet && e.Name.ToLower().Contains("earth"));
+                MyAPIGateway.Entities.GetEntities(planets, e => e is MyPlanet);
 
                 try
                 {
@@ -103,14 +104,14 @@ namespace CaptureTheHill
                 
                 var planetCenter = planet.PositionComp.GetPosition();
 
-                // TODO
                 if (expectedPlanetBaseCount >= 1 && !basesOfPlanet.Any(e => e.Name.EndsWith("ground")))
                 {
                     if (planetBasePositionOnGround.Count > 0)
                     {
                         var groundBasePosition = planetBasePositionOnGround.Pop();
+                        groundBasePosition = AdjustPositionForGroundContact(planet, "CTH_Capture_Base", groundBasePosition);
                         CreateCaptureBase(planet.Name, CaptureBaseType.Ground, groundBasePosition,
-                            planetCenter);
+                            planetCenter, "CTH_Capture_Base");
                         Show("Created ground base for " + planet.Name);
                     }
                     else
@@ -124,10 +125,13 @@ namespace CaptureTheHill
                     if (planetBasePositionOnGround.Count > 0)
                     {
                         var atmosphereBasePositionOnGround = planetBasePositionOnGround.Pop();
+                        float gravityInterference;
+                        var planetGravity = MyAPIGateway.Physics.CalculateNaturalGravityAt(atmosphereBasePositionOnGround, out gravityInterference).Length() / 9.81f;
+                        Show($"Planet {planet.Name} Gravity: {planetGravity} G, Half Gravity: {planetGravity / 2} G");
                         var atmosphereBasePosition =
-                            FindCorrectHeightForPositionForDesiredGravity(atmosphereBasePositionOnGround, 0.5f);
+                            FindCorrectHeightForPositionForDesiredGravity(atmosphereBasePositionOnGround, planetGravity / 2);
                         CreateCaptureBase(planet.Name, CaptureBaseType.Atmosphere, atmosphereBasePosition,
-                            planetCenter);
+                            planetCenter, "CTH_Capture_Base");
                         Show("Created atmosphere base for " + planet.Name);
                     }
                     else
@@ -143,8 +147,9 @@ namespace CaptureTheHill
                         var spaceBasePositionOnGround = planetBasePositionOnGround.Pop();
                         var spaceBasePosition =
                             FindCorrectHeightForPositionForDesiredGravity(spaceBasePositionOnGround, 0.0f);
-                        CreateCaptureBase(planet.Name, CaptureBaseType.Space, spaceBasePosition,
-                            planetCenter);
+                        var higherSpaceBasePosition = spaceBasePosition + Vector3D.Up * 1000;
+                        CreateCaptureBase(planet.Name, CaptureBaseType.Space, higherSpaceBasePosition,
+                            planetCenter, "CTH_Capture_Base");
                         Show("Created space base for " + planet.Name);
                     }
                     else
@@ -166,7 +171,7 @@ namespace CaptureTheHill
         }
 
         private void CreateCaptureBase(
-            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D planetCenter)
+            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D planetCenter, String prefabSubtypeId)
         {
             if (string.IsNullOrEmpty(planetName) || position.IsZero())
             {
@@ -174,7 +179,7 @@ namespace CaptureTheHill
                 return;
             }
 
-            var freePosition = MyEntities.FindFreePlace(position, 20, 20, 5, 0.2f);
+            var freePosition = MyEntities.FindFreePlace(position, 5, 20, 5, 0.1f);
             if (freePosition == null)
             {
                 Show($"Kein freier Platz gefunden für Capture Base {baseType.ToString()} auf {planetName}.");
@@ -185,7 +190,7 @@ namespace CaptureTheHill
 
             try
             {
-                var captureBasePrefab = MyDefinitionManager.Static.GetPrefabDefinition("CTH_Capture_Base");
+                var captureBasePrefab = MyDefinitionManager.Static.GetPrefabDefinition(prefabSubtypeId);
                 if (captureBasePrefab == null || captureBasePrefab.CubeGrids == null ||
                     captureBasePrefab.CubeGrids.Length == 0)
                 {
@@ -196,7 +201,7 @@ namespace CaptureTheHill
                 var spawnedGrids = new List<IMyCubeGrid>();
                 MyAPIGateway.PrefabManager.SpawnPrefab(
                     spawnedGrids,
-                    "CTH_Capture_Base",
+                    prefabSubtypeId,
                     freePosition.Value,
                     orientation[0],
                     orientation[1],
@@ -328,7 +333,7 @@ namespace CaptureTheHill
             Vector3D testPoint = surfacePoint;
             float gravityInterference;
             var gravityAtTestPoint = MyAPIGateway.Physics.CalculateNaturalGravityAt(testPoint, out gravityInterference).Length() / 9.81f;
-            var vectorIncrease = testPoint * 0.007;
+            var vectorIncrease = testPoint / (testPoint * 100);
             while (Math.Abs(gravityAtTestPoint - targetGravityG) > tolerance)
             {
                 testPoint += vectorIncrease;
@@ -342,6 +347,57 @@ namespace CaptureTheHill
         private void Show(string text)
         {
             MyAPIGateway.Utilities.ShowMessage("CTH", text);
+        }
+        
+        private Vector3D AdjustPositionForGroundContact(MyPlanet planet, string prefabSubtypeId, Vector3D position)
+        {
+            if (planet == null)
+            {
+                MyAPIGateway.Utilities.ShowMessage("Spawn", "Kein Planet übergeben.");
+                return position;
+            }
+
+            var def = MyDefinitionManager.Static.GetPrefabDefinition(prefabSubtypeId);
+            if (def == null || def.CubeGrids == null || def.CubeGrids.Length == 0)
+            {
+                MyAPIGateway.Utilities.ShowMessage("Spawn", $"Prefab '{prefabSubtypeId}' nicht gefunden oder leer.");
+                return position;
+            }
+
+            // Wir verwenden das erste Grid als Referenz (bei Mehrfach-Grids nach Bedarf erweitern)
+            var gridOb = def.CubeGrids[0];
+
+            // Grid-CubeSize in Metern (Large=2.5, Small=0.5)
+            double cellSize = gridOb.GridSizeEnum == MyCubeSize.Large ? 2.5 : 0.5;
+
+            // Unterste Zellenlage (lokal, in Cell-Koordinaten) bestimmen:
+            // MyObjectBuilder_CubeBlock.Min ist die minimale Zelle eines (ggf. mehrzelligen) Blocks.
+            int minCellY = int.MaxValue;
+            foreach (var b in gridOb.CubeBlocks)
+            {
+                if (b.Min.Y < minCellY)
+                    minCellY = b.Min.Y;
+            }
+            if (minCellY == int.MaxValue)
+            {
+                MyAPIGateway.Utilities.ShowMessage("Spawn", "Prefab enthält keine Blöcke.");
+                return position;
+            }
+
+            // Oberfläche und Normale anvisieren
+            Vector3D surface = planet.GetClosestSurfacePointGlobal(position);
+            Vector3D center = planet.PositionComp.GetPosition();
+            Vector3D up = Vector3D.Normalize(surface - center);
+            
+            // Die Y-Achse des Grids wird mit 'up' ausgerichtet.
+            // Ziel: Zentrum der untersten Zelle liegt GENAU auf der Oberfläche -> Block halb im Boden.
+            // Zentrum der untersten Zelle liegt bei (minCellY * cellSize) relativ zur Grid-Origine entlang Up.
+            Vector3D originAtSurface = surface - up * ((minCellY - cellSize) * cellSize);
+
+            // Minimaler numerischer Epsilon-Versatz in den Boden, um Voxel-Schnitt robust zu garantieren (optional)
+            originAtSurface -= up * 0.1;
+            
+            return originAtSurface;
         }
     }
 }
