@@ -10,8 +10,8 @@ namespace CaptureTheHill.logging
         
         private static readonly string LogFileNamePattern = "CaptureTheHill-{0:yyyy-MM-dd_HH-mm-ss}.log";
         private static readonly string LoggingPattern = "{0:yyyy-MM-dd HH:mm:ss} [{1}] {2}";
-        private static TextWriter CurrentLogFileWriter;
-        private static bool _isDebugEnabled;
+        private static TextWriter _currentLogFileWriter;
+        private static bool _isDebugEnabled = true;
         
         static Logger()
         {
@@ -21,7 +21,7 @@ namespace CaptureTheHill.logging
         
         public static void Info(string message)
         {
-            Log(message, LogLevel.Info);
+            Log(message);
         }
         
         public static void Warning(string message)
@@ -38,6 +38,25 @@ namespace CaptureTheHill.logging
         {
             Log(message, LogLevel.Debug);
         }
+
+        public static void CloseLogger()
+        {
+            if (_currentLogFileWriter != null)
+            {
+                try
+                {
+                    Debug("Closing logger and flushing current log file.");
+                    _currentLogFileWriter.Flush();
+                    _currentLogFileWriter.Close();
+                    _currentLogFileWriter = null;
+                }
+                catch (Exception ex)
+                {
+                    MyLog.Default.WriteLineAndConsole($"Error closing log file: {ex.Message}");
+                    MyLog.Default.WriteLineAndConsole(ex.StackTrace);
+                }
+            }
+        }
         
         private static void Log(string message, LogLevel logLevel = LogLevel.Info)
         {
@@ -45,16 +64,16 @@ namespace CaptureTheHill.logging
             {
                 return;
             }
-            if (CurrentLogFileWriter == null)
+            if (_currentLogFileWriter == null)
             {
                 Init();
             }
 
             try
             {
-                string formattedMessage = string.Format(LoggingPattern, DateTime.Now, logLevel, message);
-                CurrentLogFileWriter.WriteLine(formattedMessage);
-                CurrentLogFileWriter.Flush();
+                var formattedMessage = string.Format(LoggingPattern, DateTime.Now, logLevel, message);
+                _currentLogFileWriter.WriteLine(formattedMessage);
+                _currentLogFileWriter.Flush();
             } catch (Exception ex)
             {
                 MyLog.Default.WriteLineAndConsole($"Error writing log line [{message}] because: {ex.Message}");
@@ -89,10 +108,10 @@ namespace CaptureTheHill.logging
 
         private static void Init()
         {
-            string logFileName = string.Format(LogFileNamePattern, DateTime.Now);
-            CurrentLogFileWriter = MyAPIGateway.Utilities.WriteFileInWorldStorage(logFileName, typeof(Logger));
+            var logFileName = string.Format(LogFileNamePattern, DateTime.Now);
+            _currentLogFileWriter = MyAPIGateway.Utilities.WriteFileInWorldStorage(logFileName, typeof(Logger));
         }
-        
+      
     }
     
     
