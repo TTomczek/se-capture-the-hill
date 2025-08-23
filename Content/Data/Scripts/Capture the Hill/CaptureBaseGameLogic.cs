@@ -21,7 +21,8 @@ namespace CaptureTheHill
     public class CaptureBaseGameLogic : MyGameLogicComponent
     {
         private MyCubeGrid _captureBaseGrid;
-        private string _currentOwningFaction;
+        private long _currentOwningFaction;
+        private long _currentDominatingFaction;
         private BoundingSphereD _captureSphere;
         private BoundingSphereD _discoverySphere;
         private CaptureBaseType _captureBaseType;
@@ -49,7 +50,7 @@ namespace CaptureTheHill
             base.UpdateAfterSimulation100();
             
             CheckPlayerDiscovery();
-            // CheckCapturing();
+            CheckCapturing();
         }
 
         private CaptureBaseType GetCaptureBaseType(string name)
@@ -69,7 +70,41 @@ namespace CaptureTheHill
             }
             return type;
         }
+        
+        private float GetCaptureRadius()
+        {
+            switch (_captureBaseType)
+            {
+                case CaptureBaseType.Ground:
+                    return ModConfiguration.Instance.GroundBaseCaptureRadius;
+                case CaptureBaseType.Atmosphere:
+                    return ModConfiguration.Instance.AtmosphereBaseCaptureRadius;
+                case CaptureBaseType.Space:
+                    return ModConfiguration.Instance.SpaceBaseCaptureRadius;
+                default:
+                    Logger.Error("Unknown capture base type: " + _captureBaseType);
+                    return ModConfiguration.Instance.SpaceBaseCaptureRadius;
+            }
+        }
 
+        private float GetDiscoveryRadius()
+        {
+            switch (_captureBaseType)
+            {
+                case CaptureBaseType.Ground:
+                    return ModConfiguration.Instance.GroundBaseDiscoveryRadius;
+                case CaptureBaseType.Atmosphere:
+                    return ModConfiguration.Instance.AtmosphereBaseDiscoveryRadius;
+                case CaptureBaseType.Space:
+                    return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
+                default:
+                    Logger.Error("Unknown capture base type: " + _captureBaseType);
+                    return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
+            }
+        }
+
+        // Base discovery logic
+        
         private void CheckPlayerDiscovery()
         {
             var entitiesInSphere = new List<MyEntity>();
@@ -77,7 +112,6 @@ namespace CaptureTheHill
             var playerIdsInSphere = entitiesInSphere.OfType<IMyCharacter>().Where(character => character.IsPlayer && !character.IsDead).Select(character => character.ControllerInfo.ControllingIdentityId).ToList();
             var playersNotKnowingThisBase = playerIdsInSphere
                 .Except(CaptureTheHillGameState.GetPlayersWhoDiscoveredBase(_captureBaseGrid.Name)).ToList();
-            Logger.Info($"{_captureBaseGrid.DisplayName} - Players in Sphere: {playerIdsInSphere.Count}, Players not knowing this base: {playersNotKnowingThisBase.Count}");
             HandleBaseDiscovery(playersNotKnowingThisBase);
         }
         
@@ -95,6 +129,7 @@ namespace CaptureTheHill
                     }
                     else
                     {
+                        Logger.Info($"Player {playerId} has no faction, sending individual GPS");
                         CreateGps(_captureBaseGrid.PositionComp.GetPosition(), _captureBaseGrid.DisplayName, playerId);
                     }
                 }
@@ -102,21 +137,12 @@ namespace CaptureTheHill
             }
             else
             {
+                Logger.Info($"Player faction broadcast disabled, sending individual GPS to {playerIdsInSphere.Count} players");
                 CreateGps(_captureBaseGrid.PositionComp.GetPosition(), _captureBaseGrid.DisplayName, playerIdsInSphere);
             }
 
             Logger.Info($"Adding {playerIdsInSphere.Count} players to base discovery for {_captureBaseGrid.DisplayName}");
             CaptureTheHillGameState.AddPlayersToBaseDiscovery(_captureBaseGrid.Name, playerIdsInSphere);
-        }
-
-        private void CheckCapturing()
-        {
-            var entitiesInSphere = new List<MyEntity>();
-            MyGamePruningStructure.GetAllEntitiesInSphere(ref _captureSphere, entitiesInSphere, MyEntityQueryType.Dynamic);
-            if (entitiesInSphere.Count > 0)
-            {
-                MyAPIGateway.Utilities.ShowMessage("CTH", $"{_captureBaseGrid.DisplayName} - Entities in Sphere: {entitiesInSphere.Count}");
-            }
         }
         
         private void BroadcastBaseDiscoveryToFaction(HashSet<IMyFaction> factions)
@@ -150,37 +176,85 @@ namespace CaptureTheHill
             Logger.Debug($"Creating GPS for player {playerId} at {position} with name {name}, because they discovered {_captureBaseGrid.DisplayName}");
             MyAPIGateway.Session.GPS.AddGps(playerId, gpsPoint);
         }
+        
+        // Capturing logic
 
-        private float GetCaptureRadius()
+        private void CheckCapturing()
         {
-            switch (_captureBaseType)
+            var entitiesInSphere = new List<MyEntity>();
+            MyGamePruningStructure.GetAllEntitiesInSphere(ref _captureSphere, entitiesInSphere,
+                MyEntityQueryType.Dynamic);
+            var vehiclesInSphere = FilterForMainGrids(entitiesInSphere);
+            var dominatingFaction = GetDominatingFaction(vehiclesInSphere);
+            if (dominatingFaction != 0 && dominatingFaction != _currentOwningFaction)
             {
-                case CaptureBaseType.Ground:
-                    return ModConfiguration.Instance.GroundBaseCaptureRadius;
-                case CaptureBaseType.Atmosphere:
-                    return ModConfiguration.Instance.AtmosphereBaseCaptureRadius;
-                case CaptureBaseType.Space:
-                    return ModConfiguration.Instance.SpaceBaseCaptureRadius;
-                default:
-                    Logger.Error("Unknown capture base type: " + _captureBaseType);
-                    return ModConfiguration.Instance.SpaceBaseCaptureRadius;
+                Logger.Debug($"{_captureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
+                _currentDominatingFaction = dominatingFaction;
+                MyAPIGateway.Utilities.ShowMessage("CTH", $"{_captureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
             }
         }
 
-        private float GetDiscoveryRadius()
+        private List<MyCubeGrid> FilterForMainGrids(List<MyEntity> entities)
         {
-            switch (_captureBaseType)
+            var gridsInSphere = entities.OfType<MyCubeGrid>().Where(grid => !grid.IsStatic).ToList();
+            var vehiclesInSphere = gridsInSphere.Where(IsMainGrid).ToList();
+            return vehiclesInSphere;
+        }
+        
+        private bool IsMainGrid(MyCubeGrid grid)
+        {
+            List<IMyMechanicalConnectionBlock> allMechBlocks = new List<IMyMechanicalConnectionBlock>();
+            MyAPIGateway.TerminalActionsHelper.GetTerminalSystemForGrid(grid).GetBlocksOfType(allMechBlocks);
+
+            foreach (var mechBlock in allMechBlocks)
             {
-               case CaptureBaseType.Ground:
-                   return ModConfiguration.Instance.GroundBaseDiscoveryRadius;
-                case CaptureBaseType.Atmosphere:
-                    return ModConfiguration.Instance.AtmosphereBaseDiscoveryRadius;
-                case CaptureBaseType.Space:
-                    return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
-                default:
-                    Logger.Error("Unknown capture base type: " + _captureBaseType);
-                    return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
+                if (mechBlock.TopGrid == grid)
+                {
+                    return false;
+                }
             }
+
+            return true;
+        }
+
+        
+        private long GetDominatingFaction(List<MyCubeGrid> vehiclesInSphere)
+        {
+            var factionCount = new Dictionary<long, int>();
+            foreach (var vehicle in vehiclesInSphere)
+            {
+                var ownerId = vehicle.BigOwners.FirstOrDefault();
+                Logger.Debug($"Vehicle {vehicle.DisplayName} is owned by: {ownerId}");
+                if (ownerId == 0)
+                {
+                    continue;
+                }
+                
+                var playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(ownerId);
+                Logger.Debug($"Owner {ownerId} faction: {(playerFaction != null ? playerFaction.Name : "None")}");
+                if (playerFaction == null)
+                {
+                    NotifyPlayerToJoinFaction(ownerId);
+                    continue;
+                }
+
+                if (!factionCount.ContainsKey(playerFaction.FactionId))
+                {
+                    factionCount[playerFaction.FactionId] = 0;
+                }
+                factionCount[playerFaction.FactionId] += vehicle.GridSizeEnum == MyCubeSize.Large ? ModConfiguration.Instance.DominanceStrengthLargeGrid : ModConfiguration.Instance.DominanceStrengthSmallGrid;
+            }
+
+            if (factionCount.Count == 0)
+            {
+                return 0;
+            }
+            
+            Logger.Debug($"Faction counts in {_captureBaseGrid.DisplayName}: " + string.Join(", ", factionCount.Select(kv => $"{kv.Key}: {kv.Value}")));
+
+            var dominatingFaction = factionCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
+            Logger.Debug($"Dominating faction in {_captureBaseGrid.DisplayName} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
+            return dominatingFaction;
         }
 
         private void NotifyPlayerToJoinFaction(long playerId)

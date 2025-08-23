@@ -26,6 +26,10 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         public bool CanCaptureAlreadyClaimedBases = true;
         
         public bool BroadcastBaseDiscoveryToFaction = true;
+
+        public int DominanceStrengthSmallGrid = 1;
+        public int DominanceStrengthLargeGrid = 2;
+        
         
         public static void LoadConfiguration(bool forceReload = false)
         {
