@@ -53,6 +53,11 @@ namespace CaptureTheHill
             CheckCapturing();
         }
 
+        public override bool IsSerialized()
+        {
+            return true;
+        }
+
         private CaptureBaseType GetCaptureBaseType(string name)
         {
             var nameParts = name.Split('-');
@@ -141,7 +146,7 @@ namespace CaptureTheHill
                 CreateGps(_captureBaseGrid.PositionComp.GetPosition(), _captureBaseGrid.DisplayName, playerIdsInSphere);
             }
 
-            Logger.Info($"Adding {playerIdsInSphere.Count} players to base discovery for {_captureBaseGrid.DisplayName}");
+            Logger.Debug($"Adding {playerIdsInSphere.Count} players to base discovery for {_captureBaseGrid.Name}");
             CaptureTheHillGameState.AddPlayersToBaseDiscovery(_captureBaseGrid.Name, playerIdsInSphere);
         }
         
@@ -216,7 +221,6 @@ namespace CaptureTheHill
 
             return true;
         }
-
         
         private long GetDominatingFaction(List<MyCubeGrid> vehiclesInSphere)
         {

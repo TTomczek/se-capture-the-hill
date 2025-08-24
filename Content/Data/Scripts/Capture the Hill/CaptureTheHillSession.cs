@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CaptureTheHill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.logging;
@@ -20,6 +21,7 @@ namespace CaptureTheHill
     {
         private static bool _isInitialized;
         private static bool _isServer;
+        private static uint _ticks;
         
         public static CaptureTheHillSession Instance { get; private set; }
 
@@ -46,6 +48,7 @@ namespace CaptureTheHill
         public override void LoadData()
         {
             Instance = this;
+            CaptureTheHillGameState.LoadState();
         }
 
         public override void UpdateBeforeSimulation()
@@ -74,15 +77,16 @@ namespace CaptureTheHill
 
         protected override void UnloadData()
         {
-            if (!_isServer)
+            if (MyAPIGateway.Multiplayer.IsServer && !MyAPIGateway.Multiplayer.MultiplayerActive)
             {
                 MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkConstants.JoinFactionToCaptureMessage, HandleCaptureMessage);
             }
             
             try
             {
-                Logger.Info("Unloading Capture the Hill Session...");
                 ModConfiguration.SaveConfiguration();
+                CaptureTheHillGameState.SaveState();
+                Logger.Info("Unloaded Capture the Hill Session...");
                 Logger.CloseLogger();
             }
             catch (Exception ex)

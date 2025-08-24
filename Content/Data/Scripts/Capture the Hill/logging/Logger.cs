@@ -111,8 +111,5 @@ namespace CaptureTheHill.logging
             var logFileName = string.Format(LogFileNamePattern, DateTime.Now);
             _currentLogFileWriter = MyAPIGateway.Utilities.WriteFileInWorldStorage(logFileName, typeof(Logger));
         }
-      
     }
-    
-    
 }
