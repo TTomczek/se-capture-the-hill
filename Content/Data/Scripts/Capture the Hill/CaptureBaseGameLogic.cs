@@ -4,6 +4,7 @@ using System.Linq;
 using CaptureTheHill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
 using CaptureTheHill.logging;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -21,28 +22,46 @@ namespace CaptureTheHill
     public class CaptureBaseGameLogic : MyGameLogicComponent
     {
         private MyCubeGrid _captureBaseGrid;
-        private long _currentOwningFaction;
-        private long _currentDominatingFaction;
         private BoundingSphereD _captureSphere;
         private BoundingSphereD _discoverySphere;
-        private CaptureBaseType _captureBaseType;
+        private int _run = 0;
+        
+        public CaptureBaseType CaptureBaseType { get; private set; }
+        public long CurrentOwningFaction = 0;
+        public long CurrentDominatingFaction;
+        public long PreviousDominatingFaction = 0;
+        public int CaptureProgress = 0;
+        public CaptureBaseFightMode FightMode = CaptureBaseFightMode.Defending;
         
         public override void Init(MyObjectBuilder_EntityBase captureBaseGrid)
         {
             base.Init(captureBaseGrid);
             _captureBaseGrid = (MyCubeGrid)Entity;
-            _captureBaseType = GetCaptureBaseType(_captureBaseGrid.Name);
+            CaptureBaseType = GetCaptureBaseType(_captureBaseGrid.Name);
             NeedsUpdate |= MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
         }
 
         public override void UpdateOnceBeforeFrame()
         {
             base.UpdateOnceBeforeFrame();
+            CaptureTheHillGameState.AddBaseToPlanet(_captureBaseGrid.Name.Split('-')[0], this);
             _captureSphere = new BoundingSphereD(_captureBaseGrid.PositionComp.GetPosition(), GetCaptureRadius());
             _discoverySphere = new BoundingSphereD(_captureBaseGrid.PositionComp.GetPosition(), GetDiscoveryRadius());
             
-            NeedsUpdate |= MyEntityUpdateEnum.EACH_100TH_FRAME;
+            NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME | MyEntityUpdateEnum.EACH_100TH_FRAME;
             Logger.Debug("CaptureBaseGameLogic initialized for " + _captureBaseGrid.DisplayName);
+        }
+        
+        public override void UpdateAfterSimulation10()
+        {
+            base.UpdateAfterSimulation10();
+
+            _run++;
+            if (CaptureProgress != 0 && _run % 6 == 0)
+            {
+                MyAPIGateway.Utilities.ShowMessage("CTH", $"{_captureBaseGrid.DisplayName} progess {CaptureProgress}");
+                _run = 0;
+            }
         }
 
         public override void UpdateAfterSimulation100()
@@ -78,7 +97,7 @@ namespace CaptureTheHill
         
         private float GetCaptureRadius()
         {
-            switch (_captureBaseType)
+            switch (CaptureBaseType)
             {
                 case CaptureBaseType.Ground:
                     return ModConfiguration.Instance.GroundBaseCaptureRadius;
@@ -87,14 +106,14 @@ namespace CaptureTheHill
                 case CaptureBaseType.Space:
                     return ModConfiguration.Instance.SpaceBaseCaptureRadius;
                 default:
-                    Logger.Error("Unknown capture base type: " + _captureBaseType);
+                    Logger.Error("Unknown capture base type: " + CaptureBaseType);
                     return ModConfiguration.Instance.SpaceBaseCaptureRadius;
             }
         }
 
         private float GetDiscoveryRadius()
         {
-            switch (_captureBaseType)
+            switch (CaptureBaseType)
             {
                 case CaptureBaseType.Ground:
                     return ModConfiguration.Instance.GroundBaseDiscoveryRadius;
@@ -103,7 +122,7 @@ namespace CaptureTheHill
                 case CaptureBaseType.Space:
                     return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
                 default:
-                    Logger.Error("Unknown capture base type: " + _captureBaseType);
+                    Logger.Error("Unknown capture base type: " + CaptureBaseType);
                     return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
             }
         }
@@ -191,11 +210,10 @@ namespace CaptureTheHill
                 MyEntityQueryType.Dynamic);
             var vehiclesInSphere = FilterForMainGrids(entitiesInSphere);
             var dominatingFaction = GetDominatingFaction(vehiclesInSphere);
-            if (dominatingFaction != 0 && dominatingFaction != _currentOwningFaction)
+            if (dominatingFaction != 0 && dominatingFaction != CurrentOwningFaction)
             {
                 Logger.Debug($"{_captureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
-                _currentDominatingFaction = dominatingFaction;
-                MyAPIGateway.Utilities.ShowMessage("CTH", $"{_captureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
+                CurrentDominatingFaction = dominatingFaction;
             }
         }
 

@@ -21,9 +21,19 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         public int AtmosphereBaseDiscoveryRadius = 10000;
         public int SpaceBaseDiscoveryRadius = 15000;
         
+        // Not yet implemented
         public bool CanCaptureFriendlyBases = false;
         
+        // Not yet implemented
         public bool CanCaptureAlreadyClaimedBases = true;
+
+        // Not yet implemented
+        public bool CanCaptureBasesFromAlreadyCapturedPlanet = true;
+
+        public int PointsForFactionToWin = 100;
+
+        public int PointsForPlanetDominance = 1;
+        public int PointsPerOwnedPlanet = 3;
         
         public bool BroadcastBaseDiscoveryToFaction = true;
 

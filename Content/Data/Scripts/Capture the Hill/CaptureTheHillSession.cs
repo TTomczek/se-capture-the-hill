@@ -16,7 +16,7 @@ using IMyEntity = VRage.ModAPI.IMyEntity;
 
 namespace CaptureTheHill
 {
-    [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation)]
+    [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation | MyUpdateOrder.AfterSimulation)]
     public class CaptureTheHillSession : MySessionComponentBase
     {
         private static bool _isInitialized;
@@ -72,6 +72,29 @@ namespace CaptureTheHill
             {
                 Logger.Error($"Error checking and creating capture bases: {ex.Message}");
                 Logger.Error(ex.StackTrace);
+            }
+        }
+
+        public override void UpdateAfterSimulation()
+        {
+            if (!_isServer || !_isInitialized)
+            {
+                return;
+            }
+
+            _ticks++;
+            if (_ticks % 60 == 0)
+            {
+                _ticks = 0;
+                try
+                {
+                    CaptureBaseCaptureManager.Update();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error updating capture bases: {ex.Message}");
+                    Logger.Error(ex.StackTrace);
+                }
             }
         }
 

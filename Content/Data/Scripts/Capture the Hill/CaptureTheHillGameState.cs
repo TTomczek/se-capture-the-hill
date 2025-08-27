@@ -16,50 +16,56 @@ namespace CaptureTheHill.config
         
         // Dictionary containing all bases per planet
         [ProtoMember(1)]
-        private static SerializableDictionary<string, List<MyCubeGrid>> _basesPerPlanet = new SerializableDictionary<string, List<MyCubeGrid>>();
+        private static SerializableDictionary<string, List<CaptureBaseGameLogic>> _basesPerPlanet = new SerializableDictionary<string, List<CaptureBaseGameLogic>>();
         
         private static readonly string SaveFileName = "CaptureTheHillGameState.txt";
         
         // Dictionary containing points per faction
         [ProtoMember(2)]
-        private static SerializableDictionary<string, int> _pointsPerFaction = new SerializableDictionary<string, int>();
+        private static SerializableDictionary<long, int> _pointsPerFaction = new SerializableDictionary<long, int>();
         
         // Dictionary containing the players that discovered a base
         [ProtoMember(3)]
         private static SerializableDictionary<string, List<long>> _basePlayerDiscovered = new SerializableDictionary<string, List<long>>();
         
-        public static void AddBaseToPlanet(string planetName, MyCubeGrid baseGrid)
+        public static void AddBaseToPlanet(string planetName, CaptureBaseGameLogic logic)
         {
             if (!_basesPerPlanet.Dictionary.ContainsKey(planetName))
             {
-                _basesPerPlanet[planetName] = new List<MyCubeGrid>();
+                _basesPerPlanet[planetName] = new List<CaptureBaseGameLogic>();
             }
-            _basesPerPlanet[planetName].Add(baseGrid);
+            _basesPerPlanet[planetName].Add(logic);
         }
         
-        public static List<MyCubeGrid> GetBasesForPlanet(string planetName)
+        public static Dictionary<string, List<CaptureBaseGameLogic>> GetAllBasesPerPlanet()
         {
-            if (_basesPerPlanet.Dictionary.ContainsKey(planetName))
-            {
-                return _basesPerPlanet[planetName];
-            }
-            return new List<MyCubeGrid>();
+            return _basesPerPlanet.Dictionary;
         }
         
-        public static void AddPointsToFaction(string factionName, int points)
+        public static List<CaptureBaseGameLogic> GetAllBases()
         {
-            if (!_pointsPerFaction.Dictionary.ContainsKey(factionName))
+            List<CaptureBaseGameLogic> allBases = new List<CaptureBaseGameLogic>();
+            foreach (var baseList in _basesPerPlanet.Dictionary.Values)
             {
-                _pointsPerFaction[factionName] = 0;
+                allBases.AddRange(baseList);
             }
-            _pointsPerFaction[factionName] += points;
+            return allBases;
         }
         
-        public static int GetPointsForFaction(string factionName)
+        public static void AddPointsToFaction(long factionId, int points)
         {
-            if (_pointsPerFaction.Dictionary.ContainsKey(factionName))
+            if (!_pointsPerFaction.Dictionary.ContainsKey(factionId))
             {
-                return _pointsPerFaction[factionName];
+                _pointsPerFaction[factionId] = 0;
+            }
+            _pointsPerFaction[factionId] += points;
+        }
+        
+        public static int GetPointsForFaction(long factionId)
+        {
+            if (_pointsPerFaction.Dictionary.ContainsKey(factionId))
+            {
+                return _pointsPerFaction[factionId];
             }
             return 0;
         }
