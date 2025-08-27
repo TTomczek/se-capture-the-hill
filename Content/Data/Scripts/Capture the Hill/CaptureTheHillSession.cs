@@ -35,6 +35,8 @@ namespace CaptureTheHill
             if (_isServer)
             {
                 ModConfiguration.LoadConfiguration();
+                MyAPIGateway.Entities.OnEntityAdd += PlanetAdded;
+                MyAPIGateway.Entities.OnEntityRemove += PlanetRemoved;
             }
             
             if (MyAPIGateway.Multiplayer.IsServer && !MyAPIGateway.Multiplayer.MultiplayerActive)
@@ -104,6 +106,8 @@ namespace CaptureTheHill
             if (MyAPIGateway.Multiplayer.IsServer && !MyAPIGateway.Multiplayer.MultiplayerActive)
             {
                 MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkConstants.JoinFactionToCaptureMessage, HandleCaptureMessage);
+                MyAPIGateway.Entities.OnEntityAdd -= PlanetAdded;
+                MyAPIGateway.Entities.OnEntityRemove -= PlanetRemoved;
             }
             
             try
@@ -128,6 +132,34 @@ namespace CaptureTheHill
         {
             string msg = Encoding.UTF8.GetString(data);
             MyAPIGateway.Utilities.ShowNotification(msg, 5000);
+        }
+        
+        private void PlanetAdded(IMyEntity entity)
+        {
+            if (entity is MyPlanet)
+            {
+                var planet = entity as MyPlanet;
+                Logger.Info($"Planet added: {planet.Name}");
+                try
+                {
+                    CaptureBaseSpawner.CheckAndCreateBasesIfNeeded(new HashSet<IMyEntity> { planet });
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error($"Error checking and creating capture bases for planet {planet.Name}: {ex.Message}");
+                    Logger.Error(ex.StackTrace);
+                }
+            }
+        }
+        
+        private void PlanetRemoved(IMyEntity entity)
+        {
+            if (entity is MyPlanet)
+            {
+                var planet = entity as MyPlanet;
+                CaptureTheHillGameState.RemoveBasesOfPlanet(planet.Name);
+                Logger.Info($"Planet removed: {planet.Name}");
+            }
         }
     }
 }
