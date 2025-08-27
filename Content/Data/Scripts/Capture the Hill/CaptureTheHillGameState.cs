@@ -37,6 +37,14 @@ namespace CaptureTheHill.config
             _basesPerPlanet[planetName].Add(logic);
         }
         
+        public static void RemoveBaseFromPlanet(string planetName, CaptureBaseGameLogic logic)
+        {
+            if (_basesPerPlanet.Dictionary.ContainsKey(planetName))
+            {
+                _basesPerPlanet[planetName].Remove(logic);
+            }
+        }
+        
         public static Dictionary<string, List<CaptureBaseGameLogic>> GetAllBasesPerPlanet()
         {
             return _basesPerPlanet.Dictionary;

@@ -99,6 +99,12 @@ namespace CaptureTheHill
             return true;
         }
 
+        public override void MarkForClose()
+        {
+            base.MarkForClose();
+            CaptureTheHillGameState.RemoveBaseFromPlanet(CaptureBaseGrid.Name.Split('-')[0], this);
+        }
+
         private CaptureBaseType GetCaptureBaseType(string name)
         {
             var nameParts = name.Split('-');
