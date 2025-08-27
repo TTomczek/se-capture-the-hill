@@ -88,7 +88,8 @@ namespace CaptureTheHill
                 _ticks = 0;
                 try
                 {
-                    CaptureBaseCaptureManager.Update();
+                    var allBasesPerPlanet = CaptureTheHillGameState.GetAllBasesPerPlanet();
+                    CaptureBaseCaptureManager.Update(allBasesPerPlanet);
                 }
                 catch (Exception ex)
                 {

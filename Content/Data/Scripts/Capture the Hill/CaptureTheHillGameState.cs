@@ -42,16 +42,6 @@ namespace CaptureTheHill.config
             return _basesPerPlanet.Dictionary;
         }
         
-        public static List<CaptureBaseGameLogic> GetAllBases()
-        {
-            List<CaptureBaseGameLogic> allBases = new List<CaptureBaseGameLogic>();
-            foreach (var baseList in _basesPerPlanet.Dictionary.Values)
-            {
-                allBases.AddRange(baseList);
-            }
-            return allBases;
-        }
-        
         public static void AddPointsToFaction(long factionId, int points)
         {
             if (!_pointsPerFaction.Dictionary.ContainsKey(factionId))

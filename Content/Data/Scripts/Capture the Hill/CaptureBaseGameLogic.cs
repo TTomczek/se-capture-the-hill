@@ -21,35 +21,57 @@ namespace CaptureTheHill
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_CubeGrid), false, "CTH_Capture_Base")]
     public class CaptureBaseGameLogic : MyGameLogicComponent
     {
-        private MyCubeGrid _captureBaseGrid;
         private BoundingSphereD _captureSphere;
         private BoundingSphereD _discoverySphere;
         private int _run = 0;
         
+        public MyCubeGrid CaptureBaseGrid { get; private set; }
         public CaptureBaseType CaptureBaseType { get; private set; }
         public long CurrentOwningFaction = 0;
         public long CurrentDominatingFaction;
-        public long PreviousDominatingFaction = 0;
         public int CaptureProgress = 0;
-        public CaptureBaseFightMode FightMode = CaptureBaseFightMode.Defending;
-        
+        public CaptureBaseFightMode FightMode = CaptureBaseFightMode.Attacking;
+
+        public CaptureBaseGameLogic()
+        {
+        }
+
+        public CaptureBaseGameLogic(MyCubeGrid captureBaseGrid,
+            BoundingSphereD captureSphere = default(BoundingSphereD),
+            BoundingSphereD discoverySphere = default(BoundingSphereD), int run = 0, long currentOwningFaction = 0,
+            long currentDominatingFaction = 0, long previousDominatingFaction = 0, int captureProgress = 0,
+            CaptureBaseFightMode fightMode = CaptureBaseFightMode.Attacking,
+            CaptureBaseType captureBaseType = CaptureBaseType.Ground)
+        {
+            if (captureBaseGrid == null) throw new ArgumentNullException(nameof(captureBaseGrid));
+            CaptureBaseGrid = captureBaseGrid;
+            _captureSphere = captureSphere;
+            _discoverySphere = discoverySphere;
+            _run = run;
+            CurrentOwningFaction = currentOwningFaction;
+            CurrentDominatingFaction = currentDominatingFaction;
+            CaptureProgress = captureProgress;
+            FightMode = fightMode;
+            CaptureBaseType = captureBaseType;
+        }
+
         public override void Init(MyObjectBuilder_EntityBase captureBaseGrid)
         {
             base.Init(captureBaseGrid);
-            _captureBaseGrid = (MyCubeGrid)Entity;
-            CaptureBaseType = GetCaptureBaseType(_captureBaseGrid.Name);
+            CaptureBaseGrid = (MyCubeGrid)Entity;
+            CaptureBaseType = GetCaptureBaseType(CaptureBaseGrid.Name);
             NeedsUpdate |= MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
         }
 
         public override void UpdateOnceBeforeFrame()
         {
             base.UpdateOnceBeforeFrame();
-            CaptureTheHillGameState.AddBaseToPlanet(_captureBaseGrid.Name.Split('-')[0], this);
-            _captureSphere = new BoundingSphereD(_captureBaseGrid.PositionComp.GetPosition(), GetCaptureRadius());
-            _discoverySphere = new BoundingSphereD(_captureBaseGrid.PositionComp.GetPosition(), GetDiscoveryRadius());
+            CaptureTheHillGameState.AddBaseToPlanet(CaptureBaseGrid.Name.Split('-')[0], this);
+            _captureSphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(), GetCaptureRadius());
+            _discoverySphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(), GetDiscoveryRadius());
             
             NeedsUpdate |= MyEntityUpdateEnum.EACH_10TH_FRAME | MyEntityUpdateEnum.EACH_100TH_FRAME;
-            Logger.Debug("CaptureBaseGameLogic initialized for " + _captureBaseGrid.DisplayName);
+            Logger.Debug("CaptureBaseGameLogic initialized for " + CaptureBaseGrid.DisplayName);
         }
         
         public override void UpdateAfterSimulation10()
@@ -59,7 +81,7 @@ namespace CaptureTheHill
             _run++;
             if (CaptureProgress != 0 && _run % 6 == 0)
             {
-                MyAPIGateway.Utilities.ShowMessage("CTH", $"{_captureBaseGrid.DisplayName} progess {CaptureProgress}");
+                MyAPIGateway.Utilities.ShowMessage("CTH", $"{CaptureBaseGrid.DisplayName} progess {CaptureProgress}");
                 _run = 0;
             }
         }
@@ -135,7 +157,7 @@ namespace CaptureTheHill
             MyGamePruningStructure.GetAllEntitiesInSphere(ref _discoverySphere, entitiesInSphere, MyEntityQueryType.Dynamic);
             var playerIdsInSphere = entitiesInSphere.OfType<IMyCharacter>().Where(character => character.IsPlayer && !character.IsDead).Select(character => character.ControllerInfo.ControllingIdentityId).ToList();
             var playersNotKnowingThisBase = playerIdsInSphere
-                .Except(CaptureTheHillGameState.GetPlayersWhoDiscoveredBase(_captureBaseGrid.Name)).ToList();
+                .Except(CaptureTheHillGameState.GetPlayersWhoDiscoveredBase(CaptureBaseGrid.Name)).ToList();
             HandleBaseDiscovery(playersNotKnowingThisBase);
         }
         
@@ -154,7 +176,7 @@ namespace CaptureTheHill
                     else
                     {
                         Logger.Info($"Player {playerId} has no faction, sending individual GPS");
-                        CreateGps(_captureBaseGrid.PositionComp.GetPosition(), _captureBaseGrid.DisplayName, playerId);
+                        CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playerId);
                     }
                 }
                 BroadcastBaseDiscoveryToFaction(factionsOfPlayers);
@@ -162,11 +184,11 @@ namespace CaptureTheHill
             else
             {
                 Logger.Info($"Player faction broadcast disabled, sending individual GPS to {playerIdsInSphere.Count} players");
-                CreateGps(_captureBaseGrid.PositionComp.GetPosition(), _captureBaseGrid.DisplayName, playerIdsInSphere);
+                CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playerIdsInSphere);
             }
 
-            Logger.Debug($"Adding {playerIdsInSphere.Count} players to base discovery for {_captureBaseGrid.Name}");
-            CaptureTheHillGameState.AddPlayersToBaseDiscovery(_captureBaseGrid.Name, playerIdsInSphere);
+            Logger.Debug($"Adding {playerIdsInSphere.Count} players to base discovery for {CaptureBaseGrid.Name}");
+            CaptureTheHillGameState.AddPlayersToBaseDiscovery(CaptureBaseGrid.Name, playerIdsInSphere);
         }
         
         private void BroadcastBaseDiscoveryToFaction(HashSet<IMyFaction> factions)
@@ -174,9 +196,9 @@ namespace CaptureTheHill
             foreach (var faction in factions)
             {
                 var playersInFaction = faction.Members.Select(member => member.Key).ToList();
-                var playersWhoKnowsThisBase = CaptureTheHillGameState.GetPlayersWhoDiscoveredBase(_captureBaseGrid.DisplayName);
+                var playersWhoKnowsThisBase = CaptureTheHillGameState.GetPlayersWhoDiscoveredBase(CaptureBaseGrid.DisplayName);
                 var playersWhoDontKnowThisBase = playersInFaction.Except(playersWhoKnowsThisBase).ToList();
-                CreateGps(_captureBaseGrid.PositionComp.GetPosition(), _captureBaseGrid.DisplayName, playersWhoDontKnowThisBase);
+                CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playersWhoDontKnowThisBase);
             }
         }
         
@@ -197,7 +219,7 @@ namespace CaptureTheHill
                 true
             );
             
-            Logger.Debug($"Creating GPS for player {playerId} at {position} with name {name}, because they discovered {_captureBaseGrid.DisplayName}");
+            Logger.Debug($"Creating GPS for player {playerId} at {position} with name {name}, because they discovered {CaptureBaseGrid.DisplayName}");
             MyAPIGateway.Session.GPS.AddGps(playerId, gpsPoint);
         }
         
@@ -212,7 +234,7 @@ namespace CaptureTheHill
             var dominatingFaction = GetDominatingFaction(vehiclesInSphere);
             if (dominatingFaction != 0 && dominatingFaction != CurrentOwningFaction)
             {
-                Logger.Debug($"{_captureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
+                Logger.Debug($"{CaptureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
                 CurrentDominatingFaction = dominatingFaction;
             }
         }
@@ -242,6 +264,11 @@ namespace CaptureTheHill
         
         private long GetDominatingFaction(List<MyCubeGrid> vehiclesInSphere)
         {
+            if (vehiclesInSphere.Count == 0)
+            {
+                return 0;
+            }
+            
             var factionCount = new Dictionary<long, int>();
             foreach (var vehicle in vehiclesInSphere)
             {
@@ -272,10 +299,10 @@ namespace CaptureTheHill
                 return 0;
             }
             
-            Logger.Debug($"Faction counts in {_captureBaseGrid.DisplayName}: " + string.Join(", ", factionCount.Select(kv => $"{kv.Key}: {kv.Value}")));
+            Logger.Debug($"Faction counts in {CaptureBaseGrid.DisplayName}: " + string.Join(", ", factionCount.Select(kv => $"{kv.Key}: {kv.Value}")));
 
             var dominatingFaction = factionCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
-            Logger.Debug($"Dominating faction in {_captureBaseGrid.DisplayName} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
+            Logger.Debug($"Dominating faction in {CaptureBaseGrid.DisplayName} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
             return dominatingFaction;
         }
 

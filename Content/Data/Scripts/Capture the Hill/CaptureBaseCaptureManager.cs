@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using CaptureTheHill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
@@ -11,13 +10,11 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 {
     public static class CaptureBaseCaptureManager
     {
-        public static void Update()
+        public static void Update(Dictionary<string, List<CaptureBaseGameLogic>> basesPerPlanet)
         {
-            var allBases = CaptureTheHillGameState.GetAllBases();
+            var allBases = GetAllBases(basesPerPlanet);
             UpdateBaseCaptureProgress(allBases);
-            var allBasesPerPlanet =
-                CaptureTheHillGameState.GetAllBasesPerPlanet();
-            UpdatePoints(allBasesPerPlanet);
+            UpdatePoints(basesPerPlanet);
         }
 
         private static void UpdateBaseCaptureProgress(List<CaptureBaseGameLogic> captureBases)
@@ -30,50 +27,51 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 }
                 
                 var baseCaptureTime = GetBaseCaptureTime(cp.CaptureBaseType);
+                
+                // Nobody is capturing this base
+                if (cp.CurrentDominatingFaction == 0)
+                {
+                    continue;
+                }
 
-                // Dominated by owning faction
-                if (cp.CurrentDominatingFaction == cp.CurrentOwningFaction && cp.CurrentOwningFaction != 0)
+                // Base is already fully captured by the dominating faction
+                if (cp.CurrentOwningFaction == cp.CurrentDominatingFaction && cp.CaptureProgress == baseCaptureTime)
                 {
-                    // Still capturing
-                    if (cp.CaptureProgress < baseCaptureTime)
+                    continue;
+                }
+                
+                // Base is being captured by a different faction than the owning faction, defending
+                if (cp.CurrentOwningFaction != 0 && cp.CurrentOwningFaction != cp.CurrentDominatingFaction && cp.FightMode == CaptureBaseFightMode.Defending && cp.CaptureProgress > 0)
+                {
+                    if (cp.CaptureBaseGrid.Name.ToLower().Contains("titan"))
                     {
-                        cp.CaptureProgress++;
+                        MyAPIGateway.Utilities.ShowMessage("CBCM", "defending");
+                    }
+                    cp.CaptureProgress -= 1;
+                    Logger.Info($"{cp.CaptureBaseGrid.Name} is being defended by faction {cp.CurrentOwningFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
+                    if (cp.CaptureProgress == 0)
+                    {
+                        cp.FightMode = CaptureBaseFightMode.Attacking;
+                        cp.CurrentOwningFaction = 0;
+                        Logger.Info($"{cp.CaptureBaseGrid.Name} is now neutral");
+                        continue;
                     }
                 }
-                else
+                
+                // Base is being captured
+                if (cp.FightMode == CaptureBaseFightMode.Attacking && cp.CaptureProgress < baseCaptureTime)
                 {
-                    if (cp.CurrentDominatingFaction == cp.PreviousDominatingFaction && cp.CurrentDominatingFaction != 0)
+                    cp.CaptureProgress += 1;
+                    Logger.Info($"{cp.CaptureBaseGrid.Name} is being attacked by faction {cp.CurrentDominatingFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
+                    if (cp.CaptureProgress >= baseCaptureTime)
                     {
-                        // Capturing base owned by faction a by faction b
-                        if (cp.CaptureProgress > 0 && cp.FightMode == CaptureBaseFightMode.Attacking)
-                        {
-                            cp.FightMode = CaptureBaseFightMode.Attacking;
-                            cp.CaptureProgress--;
-                        }
-                        else
-                        {
-                            if (cp.FightMode == CaptureBaseFightMode.Attacking )
-                            {
-                                cp.CurrentOwningFaction = 0;
-                                cp.FightMode = CaptureBaseFightMode.Defending;
-                            } 
-                            else
-                            {
-                                if (cp.CaptureProgress < baseCaptureTime)
-                                {
-                                    cp.CaptureProgress++;
-                                }
-                                else
-                                {
-                                    cp.CurrentOwningFaction = cp.CurrentDominatingFaction;
-                                    cp.FightMode = CaptureBaseFightMode.Defending;
-                                }
-                            }
-                        }
+                        cp.CurrentOwningFaction = cp.CurrentDominatingFaction;
+                        cp.FightMode = CaptureBaseFightMode.Defending;
+                        Logger.Info($"{cp.CaptureBaseGrid.Name} has been captured by faction {cp.CurrentOwningFaction}");
                     }
                 }
-                cp.PreviousDominatingFaction = cp.CurrentDominatingFaction;
-                cp.CurrentDominatingFaction = 0;
+                
+                
             }
         }
 
@@ -156,6 +154,16 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             
             var dominatingFaction = factionBaseCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
             return dominatingFaction;
+        }
+
+        private static List<CaptureBaseGameLogic> GetAllBases(Dictionary<string, List<CaptureBaseGameLogic>> basesPerPlanet)
+        {
+            var allBases = new List<CaptureBaseGameLogic>();
+            foreach (var baseList in basesPerPlanet.Values)
+            {
+                allBases.AddRange(baseList);
+            }
+            return allBases;
         }
     }
 }
