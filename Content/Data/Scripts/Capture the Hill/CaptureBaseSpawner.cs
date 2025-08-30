@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CaptureTheHill.config;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using CaptureTheHill.logging;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
@@ -31,14 +33,15 @@ namespace CaptureTheHill
                 {
                     continue;
                 }
+                Logger.Debug($"Checking planet {planet.Name} with radius {planet.MaximumRadius / 1000} km for capture bases.");
 
-                var basesOfPlanet = existingBases.Where(e => e.Name.StartsWith(planet.Name)).ToList();
+                var basesOfPlanet = existingBases.Where(e => e.Name.ToLower().StartsWith(planet.Name.ToLower())).ToList();
                 var basesOfPlanetCount = basesOfPlanet.Count();
                 var expectedPlanetBaseCount = GetExpectedPlanetBaseCount(planet.MaximumRadius / 1000);
 
                 if (basesOfPlanetCount == expectedPlanetBaseCount || basesOfPlanetCount > expectedPlanetBaseCount)
                 {
-                    Logger.Info("Bereits die erwartete Anzahl oder mehr Basen sind vorhanden für " + planet.Name);
+                    Logger.Info($"{planet.Name} has {basesOfPlanetCount} bases, expected {expectedPlanetBaseCount}, no new base needed.");
                     continue;
                 }
 
@@ -62,7 +65,7 @@ namespace CaptureTheHill
                     }
                     else
                     {
-                        Logger.Error("Kein freier Platz gefunden für Capture Base Ground auf " + planet.Name + ".");
+                        Logger.Error($"Found no position for Capture Base Ground on {planet.Name}.");
                     }
                 }
 
@@ -81,7 +84,7 @@ namespace CaptureTheHill
                     }
                     else
                     {
-                        Logger.Error("Kein freier Platz gefunden für Capture Base Atmosphere auf " + planet.Name + ".");
+                        Logger.Error($"Found no position for Capture Base Atmosphere on {planet.Name}.");
                     }
                 }
 
@@ -99,7 +102,7 @@ namespace CaptureTheHill
                     }
                     else
                     {
-                        Logger.Error("Kein freier Platz gefunden für Capture Base Space auf " + planet.Name + ".");
+                        Logger.Error($"Found no position for Capture Base Space on {planet.Name}.");
                     }
                 }
             }
@@ -116,18 +119,18 @@ namespace CaptureTheHill
         }
 
         private static void CreateCaptureBase(
-            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D planetCenter, String prefabSubtypeId)
+            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D planetCenter, string prefabSubtypeId)
         {
             if (string.IsNullOrEmpty(planetName) || position.IsZero())
             {
-                Logger.Error($"Ungültige Parameter für {planetName}-capture-base-{baseType}.");
+                Logger.Error($"Invalid parameters for creating capture base on [{planetName}] at {position}.");
                 return;
             }
 
             var freePosition = MyEntities.FindFreePlace(position, 5, 20, 5, 0.1f);
             if (freePosition == null)
             {
-                Logger.Error($"Kein freier Platz gefunden für Capture Base {baseType.ToString()} auf {planetName}.");
+                Logger.Error($"No free position found for {planetName}-capture-base-{baseType} at {position}.");
                 return;
             }
 
@@ -139,7 +142,7 @@ namespace CaptureTheHill
                 if (captureBasePrefab == null || captureBasePrefab.CubeGrids == null ||
                     captureBasePrefab.CubeGrids.Length == 0)
                 {
-                    Logger.Error($"Fehler beim Laden des Capture Base Prefabs für {planetName}.");
+                    Logger.Error($"Could not find prefab definition for {prefabSubtypeId}, cannot create capture base.");
                     return;
                 }
 
@@ -167,13 +170,20 @@ namespace CaptureTheHill
             }
         }
 
-        private static void HandleBaseSpawned(String planetName, CaptureBaseType baseType, List<IMyCubeGrid> spawnedGrids)
+        private static void HandleBaseSpawned(string planetName, CaptureBaseType baseType, List<IMyCubeGrid> spawnedGrids)
         {
             foreach (var spawnedGrid in spawnedGrids)
             {
-                spawnedGrid.Name = $"{planetName}-capture-base-{baseType.ToString().ToLower()}";
+                spawnedGrid.Name = $"{planetName}-capture-base-{baseType}";
                 spawnedGrid.DisplayName = $"{planetName} Capture Base ({baseType})";
                 spawnedGrid.IsStatic = true;
+                GameStateAccessor.AddBaseToPlanet(new CaptureBaseData(
+                    planetName,
+                    spawnedGrid.Name,
+                    spawnedGrid.DisplayName,
+                    baseType
+                ));
+                Logger.Info($"Handling spawn of capture base {spawnedGrid.Name} of type {baseType} on {planetName}.");
             }
         }
     }

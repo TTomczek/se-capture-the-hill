@@ -15,7 +15,6 @@ namespace CaptureTheHill.logging
         
         static Logger()
         {
-            Init();
             MyAPIGateway.Utilities.MessageEnteredSender += LoggingMessageEntered;
         }
         
@@ -48,12 +47,15 @@ namespace CaptureTheHill.logging
                     Debug("Closing logger and flushing current log file.");
                     _currentLogFileWriter.Flush();
                     _currentLogFileWriter.Close();
-                    _currentLogFileWriter = null;
                 }
                 catch (Exception ex)
                 {
                     MyLog.Default.WriteLineAndConsole($"Error closing log file: {ex.Message}");
                     MyLog.Default.WriteLineAndConsole(ex.StackTrace);
+                }
+                finally
+                {
+                    _currentLogFileWriter = null;
                 }
             }
         }
@@ -72,8 +74,9 @@ namespace CaptureTheHill.logging
             try
             {
                 var formattedMessage = string.Format(LoggingPattern, DateTime.Now, logLevel, message);
-                _currentLogFileWriter.WriteLine(formattedMessage);
-                _currentLogFileWriter.Flush();
+                _currentLogFileWriter?.WriteLine(formattedMessage);
+                _currentLogFileWriter?.Flush();
+                MyLog.Default.WriteLineAndConsole(formattedMessage);
             } catch (Exception ex)
             {
                 MyLog.Default.WriteLineAndConsole($"Error writing log line [{message}] because: {ex.Message}");
