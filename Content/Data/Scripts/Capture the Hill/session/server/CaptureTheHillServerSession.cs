@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using CaptureTheHill.config;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -12,10 +11,10 @@ using VRage.Game.Components;
 using VRage.Utils;
 using IMyEntity = VRage.ModAPI.IMyEntity;
 
-namespace CaptureTheHill
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
 {
     [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation | MyUpdateOrder.AfterSimulation)]
-    public class CaptureTheHillSession : MySessionComponentBase
+    public class CaptureTheHillServerSession : MySessionComponentBase
     {
         private bool _isInitialized;
         private bool _isServer;
@@ -24,19 +23,17 @@ namespace CaptureTheHill
         public override void Init(MyObjectBuilder_SessionComponent sessionComponent)
         {
             base.Init(sessionComponent);
-            
-            _isServer = (MyAPIGateway.Multiplayer.MultiplayerActive && MyAPIGateway.Multiplayer.IsServer) ||
-                        !MyAPIGateway.Multiplayer.MultiplayerActive;
-            
-            if (MyAPIGateway.Multiplayer.IsServer && !MyAPIGateway.Multiplayer.MultiplayerActive)
-            {
-                MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(NetworkConstants.JoinFactionToCaptureMessage, HandleCaptureMessage);
-            }
-            
+
+            _isServer = MyAPIGateway.Multiplayer.IsServer;
         }
 
         public override void LoadData()
         {
+            if (!_isServer)
+            {
+                return;
+            }
+            
             Logger.Info("Capture the Hill Session started. isServer: " + _isServer);
             ModConfiguration.LoadConfiguration();
             GameStateAccessor.LoadState();
@@ -92,9 +89,9 @@ namespace CaptureTheHill
 
         protected override void UnloadData()
         {
-            if (MyAPIGateway.Multiplayer.IsServer && !MyAPIGateway.Multiplayer.MultiplayerActive)
+            if (!_isServer)
             {
-                MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkConstants.JoinFactionToCaptureMessage, HandleCaptureMessage);
+                return;
             }
             
             try
@@ -109,12 +106,6 @@ namespace CaptureTheHill
                 MyLog.Default.Error("Error during Capture the Hill session unload: " + ex.Message);
                 MyLog.Default.Error(ex.StackTrace);
             }
-        }
-        
-        private void HandleCaptureMessage(ushort id, byte[] data, ulong senderSteamId, bool fromServer)
-        {
-            string msg = Encoding.UTF8.GetString(data);
-            MyAPIGateway.Utilities.ShowNotification(msg, 5000);
         }
         
         private void PlanetAdded(IMyEntity entity)

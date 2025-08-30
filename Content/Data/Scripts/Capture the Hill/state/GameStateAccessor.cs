@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Sandbox.ModAPI;
 
-namespace CaptureTheHill.config
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
 {
     public class GameStateAccessor
     {

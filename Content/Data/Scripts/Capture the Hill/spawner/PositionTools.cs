@@ -7,7 +7,7 @@ using Sandbox.ModAPI;
 using VRage.Game;
 using VRageMath;
 
-namespace CaptureTheHill
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
 {
     public static class PositionTools
     {

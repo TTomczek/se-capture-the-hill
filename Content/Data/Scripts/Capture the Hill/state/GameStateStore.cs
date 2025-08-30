@@ -2,7 +2,7 @@
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using ProtoBuf;
 
-namespace CaptureTheHill.config
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
 {
     [ProtoContract]
     public class GameStateStore

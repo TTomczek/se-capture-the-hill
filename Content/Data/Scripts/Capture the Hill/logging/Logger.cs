@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging;
 using Sandbox.ModAPI;
 using VRage.Utils;
 

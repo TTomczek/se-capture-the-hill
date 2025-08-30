@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using CaptureTheHill.config;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
@@ -11,7 +11,7 @@ using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRageMath;
 
-namespace CaptureTheHill
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
 {
     public class CaptureBaseSpawner
     {

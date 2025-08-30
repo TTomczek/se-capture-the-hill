@@ -1,4 +1,4 @@
-﻿namespace CaptureTheHill.logging
+﻿namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging
 {
     public enum LogLevel
     {

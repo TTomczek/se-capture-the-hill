@@ -2,7 +2,7 @@
 using ProtoBuf;
 using Sandbox.Game.Entities;
 
-namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
 {
     [ProtoContract]
     public class CaptureBaseData

@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using CaptureTheHill.config;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -15,7 +14,7 @@ using VRage.ModAPI;
 using VRage.ObjectBuilders;
 using VRageMath;
 
-namespace CaptureTheHill
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 {
     [MyEntityComponentDescriptor(typeof(MyObjectBuilder_CubeGrid), false, "CTH_Capture_Base")]
     public class CaptureBaseGameLogic : MyGameLogicComponent

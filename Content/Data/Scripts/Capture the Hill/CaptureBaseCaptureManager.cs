@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CaptureTheHill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
@@ -65,8 +65,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                         Logger.Info($"{cp.BaseName} has been captured by faction {cp.CurrentOwningFaction}");
                     }
                 }
-                
-                
             }
         }
 
