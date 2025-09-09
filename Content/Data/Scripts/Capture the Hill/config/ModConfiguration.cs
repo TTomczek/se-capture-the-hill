@@ -33,7 +33,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         public int PointsForFactionToWin = 100;
 
         public int PointsForPlanetDominance = 1;
-        public int PointsPerOwnedPlanet = 3;
+        public int PointsPerOwnedPlanet = 5;
         
         public bool BroadcastBaseDiscoveryToFaction = true;
 
@@ -43,6 +43,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         
         public static void LoadConfiguration(bool forceReload = false)
         {
+            Logger.Info("Loading configuration...");
             try
             {
                 if (Instance != null && !forceReload)
@@ -82,6 +83,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
 
         public static void SaveConfiguration()
         {
+            Logger.Info("Saving configuration...");
             try
             {
                 if (Instance == null)

@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Sandbox.ModAPI;
 
@@ -82,6 +81,11 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
             return 0;
         }
         
+        public static Dictionary<long, int> GetPointsPerFaction()
+        {
+            return _instance.PointsPerFaction;
+        }
+        
         public static void AddPlayerToBaseDiscovery(string baseName, long playerId)
         {
             Logger.Debug($"Adding player {playerId} to base discovery for {baseName}");
@@ -114,6 +118,13 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
         
         public static void SaveState()
         {
+            Logger.Info("Saving game state...");
+            if (_instance == null)
+            {
+                Logger.Warning("No game state to save, _instance is null. Creating new instance.");
+                _instance = new GameStateStore();
+            }
+            
             using (var writer = MyAPIGateway.Utilities.WriteBinaryFileInWorldStorage(SaveFileName, typeof(GameStateStore)))
             {
                 var bytes = MyAPIGateway.Utilities.SerializeToBinary(_instance);
@@ -126,28 +137,39 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
         
         public static void LoadState()
         {
-            if (MyAPIGateway.Utilities.FileExistsInWorldStorage(SaveFileName, typeof(GameStateStore)))
+            Logger.Info("Loading game state...");
+            try
             {
-                using (var reader = MyAPIGateway.Utilities.ReadBinaryFileInWorldStorage(SaveFileName, typeof(GameStateStore)))
+                if (MyAPIGateway.Utilities.FileExistsInWorldStorage(SaveFileName, typeof(GameStateStore)))
                 {
-                    var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
-                    _instance = MyAPIGateway.Utilities.SerializeFromBinary<GameStateStore>(bytes);
-                    if (_instance == null)
+                    using (var reader = MyAPIGateway.Utilities.ReadBinaryFileInWorldStorage(SaveFileName, typeof(GameStateStore)))
                     {
-                        Logger.Warning($"Failed to load game state from {SaveFileName}, initializing new state.");
-                        _instance = new GameStateStore();
-                    }
-                    else
-                    {
-                        Logger.Info($"Game state loaded successfully from {SaveFileName}");
+                        var bytes = reader.ReadBytes((int)reader.BaseStream.Length);
+                        _instance = MyAPIGateway.Utilities.SerializeFromBinary<GameStateStore>(bytes);
+                        if (_instance == null)
+                        {
+                            Logger.Warning($"Failed to load game state from {SaveFileName}, initializing new state.");
+                            _instance = new GameStateStore();
+                        }
+                        else
+                        {
+                            Logger.Info($"Game state loaded successfully from {SaveFileName}");
+                        }
                     }
                 }
+                else
+                {
+                    _instance = new GameStateStore();
+                    Logger.Info("No existing game state found. Initialized new state.");
+                }
             }
-            else
+            catch (Exception e)
             {
                 _instance = new GameStateStore();
-                Logger.Info($"No existing game state found. Initialized new state.");
+                Logger.Error($"Error loading game state: {e.Message}");
+                Logger.Error(e.StackTrace);
             }
+            
             LogCurrentStateToDebug();
         }
 

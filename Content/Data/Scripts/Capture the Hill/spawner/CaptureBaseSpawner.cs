@@ -13,7 +13,7 @@ using VRageMath;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
 {
-    public class CaptureBaseSpawner
+    public static class CaptureBaseSpawner
     {
         public static void CheckAndCreateBasesIfNeeded(HashSet<IMyEntity> planets)
         {

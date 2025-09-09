@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
@@ -14,29 +17,27 @@ using IMyEntity = VRage.ModAPI.IMyEntity;
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
 {
     [MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation | MyUpdateOrder.AfterSimulation)]
-    public class CaptureTheHillServerSession : MySessionComponentBase
+    public class CthServerSession : MySessionComponentBase
     {
         private bool _isInitialized;
         private bool _isServer;
         private uint _ticks;
-        
-        public override void Init(MyObjectBuilder_SessionComponent sessionComponent)
-        {
-            base.Init(sessionComponent);
-
-            _isServer = MyAPIGateway.Multiplayer.IsServer;
-        }
 
         public override void LoadData()
         {
+            _isServer = MyAPIGateway.Multiplayer.IsServer || !MyAPIGateway.Multiplayer.MultiplayerActive || MyAPIGateway.Utilities.IsDedicated;
+            Logger.Info($"Server session LoadData, isServer: {_isServer}");
+            // Logger.StartLogging();
+            
             if (!_isServer)
             {
                 return;
             }
+            Logger.Info("Loading server session...");
             
-            Logger.Info("Capture the Hill Session started. isServer: " + _isServer);
             ModConfiguration.LoadConfiguration();
             GameStateAccessor.LoadState();
+            MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(NetworkMessageConstants.GetLeaderboardRequest, HandleLeaderboardRequestFromClient);
         }
 
         public override void UpdateBeforeSimulation()
@@ -46,7 +47,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
                 return;
             }
             
-            Logger.Info("Initializing Capture the Hill Session...");
+            Logger.Info("Setting up server session...");
             _isInitialized = true;
             
             var planets = new HashSet<IMyEntity>();
@@ -98,8 +99,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
             {
                 ModConfiguration.SaveConfiguration();
                 GameStateAccessor.SaveState();
+                MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkMessageConstants.GetLeaderboardRequest, HandleLeaderboardRequestFromClient);
                 Logger.Info("Unloaded Capture the Hill Session...");
-                Logger.CloseLogger();
+                // Logger.CloseLogger();
             }
             catch (Exception ex)
             {
@@ -143,6 +145,33 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
                 var planet = entity as MyPlanet;
                 GameStateAccessor.RemoveBasesOfPlanet(planet.Name);
                 Logger.Info($"Planet removed: {planet.Name}");
+            }
+        }
+        
+        private void HandleLeaderboardRequestFromClient(ushort msgId, byte[] data, ulong senderPlayerId, bool isArrivedFromServer)
+        {
+            try
+            {
+                Logger.Info($"Handling leaderboard request from identityId: {senderPlayerId}");
+                
+                var leaderboard = GameStateAccessor.GetPointsPerFaction();
+                
+                var leaderboardString = "### Leaderboard ###\n";
+                leaderboardString += $"Points to win: {ModConfiguration.Instance.PointsForFactionToWin}\n";
+                leaderboardString += "-------------------\n";
+                foreach (var entry in leaderboard.OrderByDescending(e => e.Value))
+                {
+                    leaderboardString += $"{FactionUtils.GetFactionNameById(entry.Key)}: {entry.Value} points\n";
+                }
+                
+                var reponseMessageBytes = Encoding.UTF8.GetBytes(leaderboardString);
+                var messageSend = MyAPIGateway.Multiplayer.SendMessageTo(NetworkMessageConstants.GetLeaderboardResponse, reponseMessageBytes, senderPlayerId);
+                Logger.Info($"Sent leaderboard response to senderPlayerId: {senderPlayerId}, success: {messageSend}");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Error handling leaderboard request: {ex.Message}");
+                Logger.Error(ex.StackTrace);
             }
         }
     }

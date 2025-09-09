@@ -168,8 +168,13 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playerIdsInSphere);
             }
 
-            Logger.Debug($"Adding {playerIdsInSphere.Count} players to base discovery for {CaptureBaseGrid.Name}");
             GameStateAccessor.AddPlayersToBaseDiscovery(CaptureBaseGrid.Name, playerIdsInSphere);
+            
+            if (playerIdsInSphere.Count == 0)
+            {
+                return;
+            }
+            Logger.Debug($"Adding {playerIdsInSphere.Count} players to base discovery for {CaptureBaseGrid.Name}");
         }
         
         private void BroadcastBaseDiscoveryToFaction(HashSet<IMyFaction> factions)
@@ -297,7 +302,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             var player = MyAPIGateway.Players.TryGetSteamId(playerId);
             var messageContent = $"You need to join a faction to capture this.";
             var encodedMessage = MyAPIGateway.Utilities.SerializeToBinary(messageContent);
-            MyAPIGateway.Multiplayer.SendMessageTo(NetworkConstants.JoinFactionToCaptureMessage, encodedMessage, player);
+            MyAPIGateway.Multiplayer.SendMessageTo(NetworkMessageConstants.JoinFactionToCapture, encodedMessage, player);
         }
     }
 }
