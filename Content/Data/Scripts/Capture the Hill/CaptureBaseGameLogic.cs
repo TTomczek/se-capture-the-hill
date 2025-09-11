@@ -2,6 +2,7 @@
 using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Sandbox.Game.Entities;
@@ -23,14 +24,14 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
         private BoundingSphereD _discoverySphere;
         private int _run = 0;
         private CaptureBaseData _captureBaseData;
-        
+
         public MyCubeGrid CaptureBaseGrid { get; private set; }
 
         public override void Init(MyObjectBuilder_EntityBase captureBaseGrid)
         {
             base.Init(captureBaseGrid);
             CaptureBaseGrid = (MyCubeGrid)Entity;
-            
+
             GameStateAccessor.GetBaseDataByBaseName(CaptureBaseGrid.Name, ref _captureBaseData);
             if (_captureBaseData == null)
             {
@@ -38,16 +39,17 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 NeedsUpdate = MyEntityUpdateEnum.EACH_FRAME;
                 return;
             }
+
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
         }
-        
+
         public override void UpdateOnceBeforeFrame()
         {
             base.UpdateOnceBeforeFrame();
-            
+
             _captureSphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(), GetCaptureRadius());
             _discoverySphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(), GetDiscoveryRadius());
-            
+
             NeedsUpdate = MyEntityUpdateEnum.EACH_10TH_FRAME | MyEntityUpdateEnum.EACH_100TH_FRAME;
             Logger.Debug("CaptureBaseGameLogic initialized for " + CaptureBaseGrid.DisplayName);
         }
@@ -55,14 +57,16 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
         public override void UpdateBeforeSimulation()
         {
             base.UpdateBeforeSimulation();
-            
+
             GameStateAccessor.GetBaseDataByBaseName(CaptureBaseGrid.Name, ref _captureBaseData);
-            
+
             if (_captureBaseData == null)
             {
                 return;
             }
-            Logger.Info($"Successfully fetched CaptureBaseData for {CaptureBaseGrid.Name} in UpdateBeforeSimulation. Setting NeedsUpdate.");
+
+            Logger.Info(
+                $"Successfully fetched CaptureBaseData for {CaptureBaseGrid.Name} in UpdateBeforeSimulation. Setting NeedsUpdate.");
             NeedsUpdate = MyEntityUpdateEnum.BEFORE_NEXT_FRAME;
         }
 
@@ -75,12 +79,15 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             {
                 if (_captureBaseData.CurrentOwningFaction == 0)
                 {
-                    CaptureBaseGrid.DisplayName = $"{_captureBaseData.BaseDisplayName} - Capturing: {_captureBaseData.CaptureProgress}";
+                    CaptureBaseGrid.DisplayName =
+                        $"{_captureBaseData.BaseDisplayName} - Capturing: {_captureBaseData.CaptureProgress}";
                 }
                 else
                 {
-                    CaptureBaseGrid.DisplayName = $"[{FactionUtils.GetFactionTagById(_captureBaseData.CurrentOwningFaction)}] - {_captureBaseData.BaseDisplayName} - Capturing: {_captureBaseData.CaptureProgress}";
+                    CaptureBaseGrid.DisplayName =
+                        $"[{FactionUtils.GetFactionTagById(_captureBaseData.CurrentOwningFaction)}] - {_captureBaseData.BaseDisplayName} - Capturing: {_captureBaseData.CaptureProgress}";
                 }
+
                 _run = 0;
             }
         }
@@ -88,7 +95,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
         public override void UpdateAfterSimulation100()
         {
             base.UpdateAfterSimulation100();
-            
+
             CheckPlayerDiscovery();
             CheckCapturing();
         }
@@ -97,7 +104,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
         {
             return true;
         }
-        
+
         private float GetCaptureRadius()
         {
             switch (_captureBaseData.CaptureBaseType)
@@ -131,17 +138,20 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
         }
 
         // Base discovery logic
-        
+
         private void CheckPlayerDiscovery()
         {
             var entitiesInSphere = new List<MyEntity>();
-            MyGamePruningStructure.GetAllEntitiesInSphere(ref _discoverySphere, entitiesInSphere, MyEntityQueryType.Dynamic);
-            var playerIdsInSphere = entitiesInSphere.OfType<IMyCharacter>().Where(character => character.IsPlayer && !character.IsDead).Select(character => character.ControllerInfo.ControllingIdentityId).ToList();
+            MyGamePruningStructure.GetAllEntitiesInSphere(ref _discoverySphere, entitiesInSphere,
+                MyEntityQueryType.Dynamic);
+            var playerIdsInSphere = entitiesInSphere.OfType<IMyCharacter>()
+                .Where(character => character.IsPlayer && !character.IsDead)
+                .Select(character => character.ControllerInfo.ControllingIdentityId).ToList();
             var playersNotKnowingThisBase = playerIdsInSphere
                 .Except(GameStateAccessor.GetPlayersWhoDiscoveredBase(CaptureBaseGrid.Name)).ToList();
             HandleBaseDiscovery(playersNotKnowingThisBase);
         }
-        
+
         private void HandleBaseDiscovery(List<long> playerIdsInSphere)
         {
             if (ModConfiguration.Instance.BroadcastBaseDiscoveryToFaction)
@@ -160,34 +170,39 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                         CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playerId);
                     }
                 }
+
                 BroadcastBaseDiscoveryToFaction(factionsOfPlayers);
             }
             else
             {
-                Logger.Info($"Player faction broadcast disabled, sending individual GPS to {playerIdsInSphere.Count} players");
+                Logger.Info(
+                    $"Player faction broadcast disabled, sending individual GPS to {playerIdsInSphere.Count} players");
                 CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playerIdsInSphere);
             }
 
             GameStateAccessor.AddPlayersToBaseDiscovery(CaptureBaseGrid.Name, playerIdsInSphere);
-            
+
             if (playerIdsInSphere.Count == 0)
             {
                 return;
             }
+
             Logger.Debug($"Adding {playerIdsInSphere.Count} players to base discovery for {CaptureBaseGrid.Name}");
         }
-        
+
         private void BroadcastBaseDiscoveryToFaction(HashSet<IMyFaction> factions)
         {
             foreach (var faction in factions)
             {
                 var playersInFaction = faction.Members.Select(member => member.Key).ToList();
-                var playersWhoKnowsThisBase = GameStateAccessor.GetPlayersWhoDiscoveredBase(CaptureBaseGrid.DisplayName);
+                var playersWhoKnowsThisBase =
+                    GameStateAccessor.GetPlayersWhoDiscoveredBase(CaptureBaseGrid.DisplayName);
                 var playersWhoDontKnowThisBase = playersInFaction.Except(playersWhoKnowsThisBase).ToList();
-                CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName, playersWhoDontKnowThisBase);
+                CreateGps(CaptureBaseGrid.PositionComp.GetPosition(), CaptureBaseGrid.DisplayName,
+                    playersWhoDontKnowThisBase);
             }
         }
-        
+
         private void CreateGps(Vector3D position, string name, List<long> playerIds)
         {
             foreach (var playerId in playerIds)
@@ -195,7 +210,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 CreateGps(position, name, playerId);
             }
         }
-        
+
         private void CreateGps(Vector3D position, string name, long playerId)
         {
             var gpsPoint = MyAPIGateway.Session.GPS.Create(
@@ -204,11 +219,12 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 position,
                 true
             );
-            
-            Logger.Debug($"Creating GPS for player {playerId} at {position} with name {name}, because they discovered {CaptureBaseGrid.DisplayName}");
+
+            Logger.Debug(
+                $"Creating GPS for player {playerId} at {position} with name {name}, because they discovered {CaptureBaseGrid.DisplayName}");
             MyAPIGateway.Session.GPS.AddGps(playerId, gpsPoint);
         }
-        
+
         // Capturing logic
 
         private void CheckCapturing()
@@ -231,7 +247,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             var vehiclesInSphere = gridsInSphere.Where(IsMainGrid).ToList();
             return vehiclesInSphere;
         }
-        
+
         private bool IsMainGrid(MyCubeGrid grid)
         {
             List<IMyMechanicalConnectionBlock> allMechBlocks = new List<IMyMechanicalConnectionBlock>();
@@ -247,14 +263,14 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
             return true;
         }
-        
+
         private long GetDominatingFaction(List<MyCubeGrid> vehiclesInSphere)
         {
             if (vehiclesInSphere.Count == 0)
             {
                 return 0;
             }
-            
+
             var factionCount = new Dictionary<long, int>();
             foreach (var vehicle in vehiclesInSphere)
             {
@@ -264,7 +280,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 {
                     continue;
                 }
-                
+
                 var playerFaction = MyAPIGateway.Session.Factions.TryGetPlayerFaction(ownerId);
                 Logger.Debug($"Owner {ownerId} faction: {(playerFaction != null ? playerFaction.Name : "None")}");
                 if (playerFaction == null)
@@ -277,32 +293,39 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 {
                     factionCount[playerFaction.FactionId] = 0;
                 }
-                factionCount[playerFaction.FactionId] += vehicle.GridSizeEnum == MyCubeSize.Large ? ModConfiguration.Instance.DominanceStrengthLargeGrid : ModConfiguration.Instance.DominanceStrengthSmallGrid;
+
+                factionCount[playerFaction.FactionId] += vehicle.GridSizeEnum == MyCubeSize.Large
+                    ? ModConfiguration.Instance.DominanceStrengthLargeGrid
+                    : ModConfiguration.Instance.DominanceStrengthSmallGrid;
             }
 
             if (factionCount.Count == 0)
             {
                 return 0;
             }
-            
-            Logger.Debug($"Faction counts in {CaptureBaseGrid.DisplayName}: " + string.Join(", ", factionCount.Select(kv => $"{kv.Key}: {kv.Value}")));
+
+            Logger.Debug($"Faction counts in {CaptureBaseGrid.DisplayName}: " +
+                         string.Join(", ", factionCount.Select(kv => $"{kv.Key}: {kv.Value}")));
 
             if (factionCount.Count == 0)
             {
                 Logger.Debug($"No factions present in {CaptureBaseGrid.DisplayName}");
                 return 0;
             }
+
             var dominatingFaction = factionCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
-            Logger.Debug($"Dominating faction in {CaptureBaseGrid.DisplayName} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
+            Logger.Debug(
+                $"Dominating faction in {CaptureBaseGrid.DisplayName} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
             return dominatingFaction;
         }
 
         private void NotifyPlayerToJoinFaction(long playerId)
         {
             var player = MyAPIGateway.Players.TryGetSteamId(playerId);
-            var messageContent = $"You need to join a faction to capture this.";
-            var encodedMessage = MyAPIGateway.Utilities.SerializeToBinary(messageContent);
-            MyAPIGateway.Multiplayer.SendMessageTo(NetworkMessageConstants.JoinFactionToCapture, encodedMessage, player);
+            var messageContent = "You need to join a faction to capture this.";
+            var message = new CthMessage(MessageType.ShowMessageToPlayer, messageContent);
+            var encodedMessage = MyAPIGateway.Utilities.SerializeToBinary(message);
+            MyAPIGateway.Multiplayer.SendMessageTo(NetworkChannels.ServerToClient, encodedMessage, player);
         }
     }
 }

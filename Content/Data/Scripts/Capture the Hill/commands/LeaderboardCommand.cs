@@ -1,5 +1,4 @@
-﻿using System.Text;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+﻿using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging;
 using Sandbox.ModAPI;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.commands
@@ -15,13 +14,14 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.commands
 
         public void Execute(string messageText)
         {
-            MyAPIGateway.Multiplayer.SendMessageToServer(NetworkMessageConstants.GetLeaderboardRequest, null);
+            var message = new CthMessage(MessageType.GetLeaderboardRequest, "");
+            var messageBytes = MyAPIGateway.Utilities.SerializeToBinary(message);
+            MyAPIGateway.Multiplayer.SendMessageToServer(NetworkChannels.ClientToServer, messageBytes);
         }
-        
+
         public string GetHelp()
         {
             return "leaderboard, lb - Displays the current leaderboard.";
         }
-        
     }
 }

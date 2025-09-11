@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.commands;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging;
 using CaptureTheHill.logging;
 using Sandbox.ModAPI;
 using VRage.Game.Components;
@@ -24,16 +22,17 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.client
         {
             _isClient = !MyAPIGateway.Utilities.IsDedicated;
             Logger.Info($"Client session LoadData, isClient: {_isClient}");
-            
+
             if (!_isClient)
             {
                 return;
             }
+
             Logger.Info("Loading client session...");
-            
-            MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(NetworkMessageConstants.JoinFactionToCapture, HandleCaptureMessage);
-            MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(NetworkMessageConstants.GetLeaderboardResponse, HandleLeaderboardResponse);
-            
+
+            MyAPIGateway.Multiplayer.RegisterSecureMessageHandler(NetworkChannels.ServerToClient,
+                ClientMessageHandler.HandleMessage);
+
             MyAPIGateway.Utilities.MessageEnteredSender += HandleChatCommand;
             Logger.Info("Capture the Hill Client Session started. isClient: " + _isClient);
         }
@@ -45,17 +44,11 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.client
                 return;
             }
 
-            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkMessageConstants.JoinFactionToCapture, HandleCaptureMessage);
-            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkMessageConstants.GetLeaderboardResponse, HandleLeaderboardResponse);
+            MyAPIGateway.Multiplayer.UnregisterSecureMessageHandler(NetworkChannels.ServerToClient,
+                ClientMessageHandler.HandleMessage);
             MyAPIGateway.Utilities.MessageEnteredSender -= HandleChatCommand;
         }
-        
-        private void HandleCaptureMessage(ushort id, byte[] data, ulong senderSteamId, bool fromServer)
-        {
-            string msg = Encoding.UTF8.GetString(data);
-            MyAPIGateway.Utilities.ShowNotification(msg, 5000);
-        }
-        
+
         private void HandleChatCommand(ulong sender, string messageText, ref bool sendToOthers)
         {
             if (string.IsNullOrWhiteSpace(messageText))
@@ -91,23 +84,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.client
                     break;
                 }
             }
-            
+
             sendToOthers = false;
-        }
-        
-        private void HandleLeaderboardResponse(ushort handlerId, byte[] data, ulong senderPlayerId, bool isArrivedFromServer)
-        {
-            Logger.Debug($"Leaderboard response: {Encoding.UTF8.GetString(data)}");
-            try
-            {
-                var leaderboardString = Encoding.UTF8.GetString(data);
-                MyAPIGateway.Utilities.ShowMessage("CTH", leaderboardString);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Error handling leaderboard request: " + ex.Message);
-                Logger.Error(ex.StackTrace);
-            }
         }
     }
 }
