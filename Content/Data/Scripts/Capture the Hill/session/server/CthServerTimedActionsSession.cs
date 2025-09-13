@@ -11,7 +11,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
 
         public override void UpdateAfterSimulation()
         {
-            if (!CthServerSession.Instance.IsServer)
+            if (!CthServerSession.Instance.IsServer || _ticks == 0)
             {
                 return;
             }

@@ -117,6 +117,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
             var factionName = FactionUtils.GetFactionNameById(winningFaction);
             Logger.Info($"{factionName} wins");
+
+            var winMessage = $"\n### {factionName} wins the game! ###\n";
+            SendToAllPlayer.SendToAllPlayers(winMessage);
         }
 
         private static long IsPlanetOwnedBySingleFaction(List<CaptureBaseData> basesOfPlanet)
