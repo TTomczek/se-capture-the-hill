@@ -33,24 +33,29 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                 {
                     continue;
                 }
-                Logger.Debug($"Checking planet {planet.Name} with radius {planet.MaximumRadius / 1000} km for capture bases.");
 
-                var basesOfPlanet = existingBases.Where(e => e.Name.ToLower().StartsWith(planet.Name.ToLower())).ToList();
+                Logger.Debug(
+                    $"Checking planet {planet.Name} with radius {planet.MaximumRadius / 1000} km for capture bases.");
+
+                var basesOfPlanet = existingBases.Where(e => e.Name.ToLower().StartsWith(planet.Name.ToLower()))
+                    .ToList();
                 var basesOfPlanetCount = basesOfPlanet.Count();
                 var expectedPlanetBaseCount = GetExpectedPlanetBaseCount(planet.MaximumRadius / 1000);
 
                 if (basesOfPlanetCount == expectedPlanetBaseCount || basesOfPlanetCount > expectedPlanetBaseCount)
                 {
-                    Logger.Info($"{planet.Name} has {basesOfPlanetCount} bases, expected {expectedPlanetBaseCount}, no new base needed.");
+                    Logger.Info(
+                        $"{planet.Name} has {basesOfPlanetCount} bases, expected {expectedPlanetBaseCount}, no new base needed.");
                     continue;
                 }
 
                 var existingPlanetBasePositions = basesOfPlanet
                     .Select(e => e.GetPosition())
                     .ToList();
-                var planetBasePositionOnGround = PositionTools.GenerateMaxDistanceSurfacePoints(planet.PositionComp.GetPosition(),
+                var planetBasePositionOnGround = PositionTools.GenerateMaxDistanceSurfacePoints(
+                    planet.PositionComp.GetPosition(),
                     planet.MaximumRadius, existingPlanetBasePositions, expectedPlanetBaseCount);
-                
+
                 var planetCenter = planet.PositionComp.GetPosition();
 
                 if (expectedPlanetBaseCount >= 1 && !basesOfPlanet.Any(e => e.Name.EndsWith("ground")))
@@ -58,7 +63,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                     if (planetBasePositionOnGround.Count > 0)
                     {
                         var groundBasePosition = planetBasePositionOnGround.Pop();
-                        groundBasePosition = PositionTools.AdjustPositionForGroundContact(planet, "CTH_Capture_Base", groundBasePosition);
+                        groundBasePosition =
+                            PositionTools.AdjustPositionForGroundContact(planet, "CTH_Capture_Base",
+                                groundBasePosition);
                         CreateCaptureBase(planet.Name, CaptureBaseType.Ground, groundBasePosition,
                             planetCenter, "CTH_Capture_Base");
                         Logger.Info("Created ground base for " + planet.Name);
@@ -75,9 +82,12 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                     {
                         var atmosphereBasePositionOnGround = planetBasePositionOnGround.Pop();
                         float gravityInterference;
-                        var planetGravity = MyAPIGateway.Physics.CalculateNaturalGravityAt(atmosphereBasePositionOnGround, out gravityInterference).Length() / 9.81f;
+                        var planetGravity = MyAPIGateway.Physics
+                            .CalculateNaturalGravityAt(atmosphereBasePositionOnGround, out gravityInterference)
+                            .Length() / 9.81f;
                         var atmosphereBasePosition =
-                            PositionTools.FindCorrectHeightForPositionForDesiredGravity(atmosphereBasePositionOnGround, planetGravity / 2);
+                            PositionTools.FindCorrectHeightForPositionForDesiredGravity(atmosphereBasePositionOnGround,
+                                planetGravity / 2);
                         CreateCaptureBase(planet.Name, CaptureBaseType.Atmosphere, atmosphereBasePosition,
                             planetCenter, "CTH_Capture_Base");
                         Logger.Info("Created atmosphere base for " + planet.Name);
@@ -94,7 +104,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                     {
                         var spaceBasePositionOnGround = planetBasePositionOnGround.Pop();
                         var spaceBasePosition =
-                            PositionTools.FindCorrectHeightForPositionForDesiredGravity(spaceBasePositionOnGround, 0.0f);
+                            PositionTools.FindCorrectHeightForPositionForDesiredGravity(spaceBasePositionOnGround,
+                                0.0f);
                         var higherSpaceBasePosition = spaceBasePosition + Vector3D.Up * 1000;
                         CreateCaptureBase(planet.Name, CaptureBaseType.Space, higherSpaceBasePosition,
                             planetCenter, "CTH_Capture_Base");
@@ -119,7 +130,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
         }
 
         private static void CreateCaptureBase(
-            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D planetCenter, string prefabSubtypeId)
+            string planetName, CaptureBaseType baseType, Vector3D position, Vector3D planetCenter,
+            string prefabSubtypeId)
         {
             if (string.IsNullOrEmpty(planetName) || position.IsZero())
             {
@@ -142,7 +154,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                 if (captureBasePrefab == null || captureBasePrefab.CubeGrids == null ||
                     captureBasePrefab.CubeGrids.Length == 0)
                 {
-                    Logger.Error($"Could not find prefab definition for {prefabSubtypeId}, cannot create capture base.");
+                    Logger.Error(
+                        $"Could not find prefab definition for {prefabSubtypeId}, cannot create capture base.");
                     return;
                 }
 
@@ -170,19 +183,33 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
             }
         }
 
-        private static void HandleBaseSpawned(string planetName, CaptureBaseType baseType, List<IMyCubeGrid> spawnedGrids)
+        private static void HandleBaseSpawned(string planetName, CaptureBaseType baseType,
+            List<IMyCubeGrid> spawnedGrids)
         {
             foreach (var spawnedGrid in spawnedGrids)
             {
                 spawnedGrid.Name = $"{planetName}-capture-base-{baseType}";
                 spawnedGrid.DisplayName = $"{planetName} Capture Base ({baseType})";
                 spawnedGrid.IsStatic = true;
+
                 GameStateAccessor.AddBaseToPlanet(new CaptureBaseData(
                     planetName,
                     spawnedGrid.Name,
                     spawnedGrid.DisplayName,
                     baseType
                 ));
+
+                var spawnedGridEntity = spawnedGrid as MyCubeGrid;
+                if (spawnedGridEntity == null)
+                {
+                    Logger.Error($"Could not cast grid with name {spawnedGrid.Name} to MyCubeGrid.");
+                    continue;
+                }
+
+                spawnedGridEntity.DestructibleBlocks = false;
+                spawnedGridEntity.Editable = false;
+                spawnedGridEntity.Save = true;
+
                 Logger.Info($"Handling spawn of capture base {spawnedGrid.Name} of type {baseType} on {planetName}.");
             }
         }

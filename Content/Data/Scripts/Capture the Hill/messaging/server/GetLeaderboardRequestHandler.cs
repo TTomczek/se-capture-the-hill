@@ -22,7 +22,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server
 
                 var leaderboard = GameStateAccessor.GetPointsPerFaction();
 
-                var leaderboardString = "### Leaderboard ###\n";
+                var leaderboardString = "\n### Leaderboard ###\n";
                 leaderboardString += $"Points to win: {ModConfiguration.Instance.PointsForFactionToWin}\n";
                 leaderboardString += "-------------------\n";
                 foreach (var entry in leaderboard.OrderByDescending(e => e.Value))
