@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messages;
 using CaptureTheHill.logging;
 using Sandbox.ModAPI;
 
@@ -20,23 +18,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server
             {
                 Logger.Info($"Handling leaderboard request from senderPlayerId: {senderPlayerId}");
 
-                var leaderboard = GameStateAccessor.GetPointsPerFaction();
-
-                var leaderboardString = "\n### Leaderboard ###\n";
-                leaderboardString += $"Points to win: {ModConfiguration.Instance.PointsForFactionToWin}\n";
-                leaderboardString += "-------------------\n";
-
-                if (leaderboard.Count == 0)
-                {
-                    leaderboardString += "No points scored yet.\n";
-                }
-                else
-                {
-                    foreach (var entry in leaderboard.OrderByDescending(e => e.Value))
-                    {
-                        leaderboardString += $"{FactionUtils.GetFactionNameById(entry.Key)}: {entry.Value} points\n";
-                    }
-                }
+                var leaderboardString = LeaderboardMessage.GetLeaderboardMessage();
 
                 var responseMessage = new CthMessage(MessageType.ShowMessageToPlayer, leaderboardString);
                 var responseMessageBytes = MyAPIGateway.Utilities.SerializeToBinary(responseMessage);

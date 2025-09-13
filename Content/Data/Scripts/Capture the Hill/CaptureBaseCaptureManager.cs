@@ -2,6 +2,8 @@
 using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messages;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 
@@ -9,24 +11,20 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 {
     public static class CaptureBaseCaptureManager
     {
-        public static void Update(Dictionary<string, List<CaptureBaseData>> basesPerPlanet)
+        public static void UpdateBaseCaptureProgress()
         {
-            var allBases = GetAllBases(basesPerPlanet);
-            UpdateBaseCaptureProgress(allBases);
-            UpdatePoints(basesPerPlanet);
-        }
+            var basesPerPlanet = GameStateAccessor.GetAllBasesPerPlanet();
+            var captureBases = GetAllBases(basesPerPlanet);
 
-        private static void UpdateBaseCaptureProgress(List<CaptureBaseData> captureBases)
-        {
             foreach (var cp in captureBases)
             {
                 if (cp == null)
                 {
                     return;
                 }
-                
+
                 var baseCaptureTime = GetBaseCaptureTime(cp.CaptureBaseType);
-                
+
                 // Nobody is capturing this base
                 if (cp.CurrentDominatingFaction == 0)
                 {
@@ -38,12 +36,14 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 {
                     continue;
                 }
-                
+
                 // Base is being captured by a different faction than the owning faction, defending
-                if (cp.CurrentOwningFaction != 0 && cp.CurrentOwningFaction != cp.CurrentDominatingFaction && cp.FightMode == CaptureBaseFightMode.Defending && cp.CaptureProgress > 0)
+                if (cp.CurrentOwningFaction != 0 && cp.CurrentOwningFaction != cp.CurrentDominatingFaction &&
+                    cp.FightMode == CaptureBaseFightMode.Defending && cp.CaptureProgress > 0)
                 {
                     cp.CaptureProgress -= 1;
-                    Logger.Info($"{cp.BaseName} is being defended by faction {cp.CurrentOwningFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
+                    Logger.Info(
+                        $"{cp.BaseName} is being defended by faction {cp.CurrentOwningFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
                     if (cp.CaptureProgress == 0)
                     {
                         cp.FightMode = CaptureBaseFightMode.Attacking;
@@ -52,12 +52,13 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                         continue;
                     }
                 }
-                
+
                 // Base is being captured
                 if (cp.FightMode == CaptureBaseFightMode.Attacking && cp.CaptureProgress < baseCaptureTime)
                 {
                     cp.CaptureProgress += 1;
-                    Logger.Info($"{cp.BaseName} is being attacked by faction {cp.CurrentDominatingFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
+                    Logger.Info(
+                        $"{cp.BaseName} is being attacked by faction {cp.CurrentDominatingFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
                     if (cp.CaptureProgress >= baseCaptureTime)
                     {
                         cp.CurrentOwningFaction = cp.CurrentDominatingFaction;
@@ -68,8 +69,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             }
         }
 
-        private static void UpdatePoints(Dictionary<string, List<CaptureBaseData>> basesPerPlanet)
+        public static void UpdatePoints()
         {
+            var basesPerPlanet = GameStateAccessor.GetAllBasesPerPlanet();
             foreach (var basesOfPlanetEntry in basesPerPlanet)
             {
                 var planetOwnedByFaction = IsPlanetOwnedBySingleFaction(basesOfPlanetEntry.Value);
@@ -79,15 +81,44 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                         ModConfiguration.Instance.PointsPerOwnedPlanet);
                     return;
                 }
-                
+
                 var dominatingFaction = GetDominatingFaction(basesOfPlanetEntry.Value);
                 if (dominatingFaction != 0)
                 {
-                    GameStateAccessor.AddPointsToFaction(dominatingFaction, ModConfiguration.Instance.PointsForPlanetDominance);
+                    GameStateAccessor.AddPointsToFaction(dominatingFaction,
+                        ModConfiguration.Instance.PointsForPlanetDominance);
                 }
+
+                CheckWin();
             }
         }
-        
+
+        public static void PrintLeaderboard()
+        {
+            var leaderboardString = LeaderboardMessage.GetLeaderboardMessage();
+            SendToAllPlayer.SendToAllPlayers(leaderboardString);
+        }
+
+        private static void CheckWin()
+        {
+            var allPointsOfFactions = GameStateAccessor.GetPointsPerFaction();
+            if (allPointsOfFactions.Count == 0)
+            {
+                return;
+            }
+
+            var winningFaction = allPointsOfFactions
+                .Where((l, r) => l.Value >= ModConfiguration.Instance.PointsForFactionToWin).FirstOrDefault().Key;
+
+            if (winningFaction == 0)
+            {
+                return;
+            }
+
+            var factionName = FactionUtils.GetFactionNameById(winningFaction);
+            Logger.Info($"{factionName} wins");
+        }
+
         private static long IsPlanetOwnedBySingleFaction(List<CaptureBaseData> basesOfPlanet)
         {
             long owningFactionId = 0;
@@ -125,11 +156,12 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 case CaptureBaseType.Space:
                     return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
                 default:
-                    Logger.Error($"Could not determine base capture time for base type {type}, returning default of 100 seconds");
+                    Logger.Error(
+                        $"Could not determine base capture time for base type {type}, returning default of 100 seconds");
                     return 100;
             }
         }
-        
+
         private static long GetDominatingFaction(List<CaptureBaseData> basesOfPlanet)
         {
             Dictionary<long, int> factionBaseCount = new Dictionary<long, int>();
@@ -141,14 +173,16 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                     {
                         factionBaseCount[baseLogic.CurrentOwningFaction] = 0;
                     }
+
                     factionBaseCount[baseLogic.CurrentOwningFaction]++;
                 }
             }
-            
+
             if (factionBaseCount.Count == 0)
             {
                 return 0;
             }
+
             var dominatingFaction = factionBaseCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
             return dominatingFaction;
         }
@@ -160,6 +194,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             {
                 allBases.AddRange(baseList);
             }
+
             return allBases;
         }
     }
