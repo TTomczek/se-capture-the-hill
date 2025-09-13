@@ -25,9 +25,17 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server
                 var leaderboardString = "\n### Leaderboard ###\n";
                 leaderboardString += $"Points to win: {ModConfiguration.Instance.PointsForFactionToWin}\n";
                 leaderboardString += "-------------------\n";
-                foreach (var entry in leaderboard.OrderByDescending(e => e.Value))
+
+                if (leaderboard.Count == 0)
                 {
-                    leaderboardString += $"{FactionUtils.GetFactionNameById(entry.Key)}: {entry.Value} points\n";
+                    leaderboardString += "No points scored yet.\n";
+                }
+                else
+                {
+                    foreach (var entry in leaderboard.OrderByDescending(e => e.Value))
+                    {
+                        leaderboardString += $"{FactionUtils.GetFactionNameById(entry.Key)}: {entry.Value} points\n";
+                    }
                 }
 
                 var responseMessage = new CthMessage(MessageType.ShowMessageToPlayer, leaderboardString);

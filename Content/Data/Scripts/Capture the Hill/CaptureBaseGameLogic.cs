@@ -315,7 +315,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
             var dominatingFaction = factionCount.Aggregate((l, r) => l.Value > r.Value ? l : r).Key;
             Logger.Debug(
-                $"Dominating faction in {CaptureBaseGrid.DisplayName} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
+                $"Dominating faction at {CaptureBaseGrid.Name} is {dominatingFaction} with {factionCount[dominatingFaction]} vehicles");
             return dominatingFaction;
         }
 
