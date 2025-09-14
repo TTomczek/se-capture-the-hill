@@ -9,7 +9,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
 {
     public class GameStateAccessor
     {
-        private static readonly string SaveFileName = "CaptureTheHillGameState.bin";
+        private const string SaveFileName = "CaptureTheHillGameState.bin";
 
         private static GameStateStore _instance;
 

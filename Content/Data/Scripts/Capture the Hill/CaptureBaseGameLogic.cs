@@ -98,6 +98,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
             CheckPlayerDiscovery();
             CheckCapturing();
+            CheckUranium();
         }
 
         public override bool IsSerialized()
@@ -326,6 +327,46 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             var message = new CthMessage(MessageType.ShowMessageToPlayer, messageContent);
             var encodedMessage = MyAPIGateway.Utilities.SerializeToBinary(message);
             MyAPIGateway.Multiplayer.SendMessageTo(NetworkChannels.ServerToClient, encodedMessage, player);
+        }
+
+        private void CheckUranium()
+        {
+            foreach (var block in CaptureBaseGrid.GetFatBlocks())
+            {
+                var reactor = block as MyReactor;
+                if (reactor != null)
+                {
+                    var inventory = reactor.GetInventory();
+                    if (inventory == null)
+                    {
+                        Logger.Debug(
+                            $"Reactor {reactor.DisplayName} at base {_captureBaseData.BaseName} doesn't have any inventory");
+                        return;
+                    }
+
+                    var items = inventory.GetItems();
+
+                    double totalAmountOfAvailableUranium = 0;
+                    foreach (var item in items)
+                    {
+                        if (item.Content.SubtypeId.String == "Uranium")
+                        {
+                            totalAmountOfAvailableUranium += (double)item.Amount;
+                        }
+                    }
+
+                    if (totalAmountOfAvailableUranium < 10)
+                    {
+                        Logger.Debug(
+                            $"Reactor at base {_captureBaseData.BaseName} has low uranium ({totalAmountOfAvailableUranium}), adding more.");
+
+                        var itemId = new MyDefinitionId(typeof(MyObjectBuilder_Ingot), "Uranium");
+                        var uraniumIngot =
+                            (MyObjectBuilder_PhysicalObject)MyObjectBuilderSerializer.CreateNewObject(itemId);
+                        inventory.AddItems(10, uraniumIngot);
+                    }
+                }
+            }
         }
     }
 }
