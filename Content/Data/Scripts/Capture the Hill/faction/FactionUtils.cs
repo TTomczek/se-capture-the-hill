@@ -4,19 +4,19 @@ using CaptureTheHill.logging;
 using Sandbox.ModAPI;
 using VRage.Game.ModAPI;
 
-namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.faction
 {
     public static class FactionUtils
     {
         public static string GetFactionTagById(long factionId)
         {
-            IMyFaction faction = GetFactionById(factionId);
+            var faction = GetFactionById(factionId);
             return faction?.Tag ?? "N/A";
         }
 
         public static string GetFactionNameById(long factionId)
         {
-            IMyFaction faction = GetFactionById(factionId);
+            var faction = GetFactionById(factionId);
             return faction?.Name ?? "N/A";
         }
 
@@ -36,8 +36,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
         private static IMyFaction GetFactionById(long factionId)
         {
-            IMyFaction faction = MyAPIGateway.Session.Factions.TryGetFactionById(factionId);
-            return faction;
+            return MyAPIGateway.Session.Factions.TryGetFactionById(factionId);
         }
     }
 }

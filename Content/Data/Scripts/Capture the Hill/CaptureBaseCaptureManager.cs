@@ -2,6 +2,7 @@
 using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.faction;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messages;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
@@ -108,7 +109,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             }
 
             var winningFaction = allPointsOfFactions
-                .Where((l, r) => l.Value >= ModConfiguration.Instance.PointsForFactionToWin).FirstOrDefault().Key;
+                .Where((l, r) => l.Value >= ModConfiguration.Instance.PointsForFactionToWin)
+                .Select((entry) => entry.Key)
+                .FirstOrDefault(factionId => FactionUtils.GetFactionNameById(factionId) != "N/A");
 
             if (winningFaction == 0)
             {
@@ -116,10 +119,10 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             }
 
             var factionName = FactionUtils.GetFactionNameById(winningFaction);
-            Logger.Info($"{factionName} wins");
 
             var winMessage = $"\n### {factionName} wins the game! ###\n";
             SendToAllPlayer.SendToAllPlayers(winMessage);
+            Logger.Info($"{factionName} wins");
         }
 
         private static long IsPlanetOwnedBySingleFaction(List<CaptureBaseData> basesOfPlanet)

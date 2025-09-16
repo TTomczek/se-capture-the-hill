@@ -1,4 +1,5 @@
-﻿using Sandbox.ModAPI;
+﻿using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.faction;
+using Sandbox.ModAPI;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server
 {

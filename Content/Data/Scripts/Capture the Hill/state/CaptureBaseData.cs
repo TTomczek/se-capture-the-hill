@@ -1,28 +1,19 @@
 ﻿using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
 using ProtoBuf;
-using Sandbox.Game.Entities;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
 {
     [ProtoContract]
     public class CaptureBaseData
     {
-        [ProtoMember(1)]
-        public string PlanetName;
-        [ProtoMember(2)]
-        public string BaseName;
-        [ProtoMember(3)]
-        public string BaseDisplayName;
-        [ProtoMember(4)]
-        public CaptureBaseType CaptureBaseType;
-        [ProtoMember(5)]
-        public long CurrentOwningFaction = 0;
-        [ProtoMember(6)]
-        public long CurrentDominatingFaction;
-        [ProtoMember(7)]
-        public int CaptureProgress = 0;
-        [ProtoMember(8)]
-        public CaptureBaseFightMode FightMode;
+        [ProtoMember(1)] public string PlanetName;
+        [ProtoMember(2)] public string BaseName;
+        [ProtoMember(3)] public string BaseDisplayName;
+        [ProtoMember(4)] public CaptureBaseType CaptureBaseType;
+        [ProtoMember(5)] public long CurrentOwningFaction = 0;
+        [ProtoMember(6)] public long CurrentDominatingFaction;
+        [ProtoMember(7)] public int CaptureProgress = 0;
+        [ProtoMember(8)] public CaptureBaseFightMode FightMode;
 
         public CaptureBaseData()
         {

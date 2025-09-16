@@ -2,6 +2,7 @@
 using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.faction;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
@@ -77,15 +78,22 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             _run++;
             if (_captureBaseData.CaptureProgress != 0 && _run % 6 == 0)
             {
+                var requiredCaptureTime = GetCaptureTime();
+                var controlPercentage = (float)_captureBaseData.CaptureProgress / requiredCaptureTime * 100;
+                if (_captureBaseData.BaseName.ToLower().Contains("moon"))
+                {
+                    Logger.Info($"{_captureBaseData.CaptureProgress}, {requiredCaptureTime}, {controlPercentage}");
+                }
+
                 if (_captureBaseData.CurrentOwningFaction == 0)
                 {
                     CaptureBaseGrid.DisplayName =
-                        $"{_captureBaseData.BaseDisplayName} - Capturing: {_captureBaseData.CaptureProgress}";
+                        $"{_captureBaseData.BaseDisplayName} - Control: {controlPercentage}%";
                 }
                 else
                 {
                     CaptureBaseGrid.DisplayName =
-                        $"[{FactionUtils.GetFactionTagById(_captureBaseData.CurrentOwningFaction)}] - {_captureBaseData.BaseDisplayName} - Capturing: {_captureBaseData.CaptureProgress}";
+                        $"[{FactionUtils.GetFactionTagById(_captureBaseData.CurrentOwningFaction)}] - {_captureBaseData.BaseDisplayName} - Control: {controlPercentage}%";
                 }
 
                 _run = 0;
@@ -135,6 +143,22 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 default:
                     Logger.Error($"Unknown capture base type: {_captureBaseData.CaptureBaseType}");
                     return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
+            }
+        }
+
+        private int GetCaptureTime()
+        {
+            switch (_captureBaseData.CaptureBaseType)
+            {
+                case CaptureBaseType.Ground:
+                    return ModConfiguration.Instance.GroundBaseCaptureTimeInSeconds;
+                case CaptureBaseType.Atmosphere:
+                    return ModConfiguration.Instance.AtmosphereBaseCaptureTimeInSeconds;
+                case CaptureBaseType.Space:
+                    return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
+                default:
+                    Logger.Warning($"Unknown capture base type: {_captureBaseData.CaptureBaseType}");
+                    return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
             }
         }
 

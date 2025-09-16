@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.faction;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messages
@@ -22,7 +23,11 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messages
             {
                 foreach (var entry in leaderboard.OrderByDescending(e => e.Value))
                 {
-                    leaderboardString += $"{FactionUtils.GetFactionNameById(entry.Key)}: {entry.Value} points\n";
+                    var factionName = FactionUtils.GetFactionNameById(entry.Key);
+                    if (factionName != "N/A")
+                    {
+                        leaderboardString += $"{FactionUtils.GetFactionNameById(entry.Key)}: {entry.Value} points\n";
+                    }
                 }
             }
 

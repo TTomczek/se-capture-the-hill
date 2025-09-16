@@ -9,9 +9,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         private static readonly string ConfigFileName = "CaptureTheHillConfig.xml";
         public static ModConfiguration Instance;
 
-        public int GroundBaseCaptureTimeInSeconds = 10;
-        public int AtmosphereBaseCaptureTimeInSeconds = 10;
-        public int SpaceBaseCaptureTimeInSeconds = 10;
+        public int GroundBaseCaptureTimeInSeconds = 600;
+        public int AtmosphereBaseCaptureTimeInSeconds = 600;
+        public int SpaceBaseCaptureTimeInSeconds = 600;
 
         public int GroundBaseCaptureRadius = 150;
         public int AtmosphereBaseCaptureRadius = 250;

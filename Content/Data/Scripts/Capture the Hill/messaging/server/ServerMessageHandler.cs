@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server;
 using CaptureTheHill.logging;
 using Sandbox.ModAPI;
 
-namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging
+namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server
 {
     public static class ServerMessageHandler
     {

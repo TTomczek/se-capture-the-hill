@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging.server;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
