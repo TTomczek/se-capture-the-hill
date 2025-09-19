@@ -262,6 +262,10 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 Logger.Debug($"{CaptureBaseGrid.DisplayName} is being captured by faction {dominatingFaction}");
                 _captureBaseData.CurrentDominatingFaction = dominatingFaction;
             }
+            else
+            {
+                _captureBaseData.CurrentDominatingFaction = 0;
+            }
         }
 
         private List<MyCubeGrid> FilterForMainGrids(List<MyEntity> entities)
