@@ -43,14 +43,26 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                     cp.FightMode == CaptureBaseFightMode.Defending && cp.CaptureProgress > 0)
                 {
                     cp.CaptureProgress -= 1;
-                    Logger.Info(
+                    Logger.Debug(
                         $"{cp.BaseName} is being defended by faction {cp.CurrentOwningFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
                     if (cp.CaptureProgress == 0)
                     {
+                        var previousOwningFaction = cp.CurrentOwningFaction;
+                        SendToAllPlayerInFaction.SendToAllPlayersInFaction(previousOwningFaction,
+                            $"\n{cp.BaseDisplayName} has been lost.\n");
+                        cp.LastNotifiedFaction = previousOwningFaction;
+
                         cp.FightMode = CaptureBaseFightMode.Attacking;
                         cp.CurrentOwningFaction = 0;
                         Logger.Info($"{cp.BaseName} is now neutral");
                         continue;
+                    }
+
+                    if (cp.CurrentOwningFaction != cp.LastNotifiedFaction)
+                    {
+                        SendToAllPlayerInFaction.SendToAllPlayersInFaction(cp.CurrentOwningFaction,
+                            $"\n{cp.BaseDisplayName} is being attacked! Defend it!\n");
+                        cp.LastNotifiedFaction = cp.CurrentOwningFaction;
                     }
                 }
 
@@ -58,13 +70,24 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 if (cp.FightMode == CaptureBaseFightMode.Attacking && cp.CaptureProgress < baseCaptureTime)
                 {
                     cp.CaptureProgress += 1;
-                    Logger.Info(
+                    Logger.Debug(
                         $"{cp.BaseName} is being attacked by faction {cp.CurrentDominatingFaction}. Capture progress: {cp.CaptureProgress}/{baseCaptureTime}");
                     if (cp.CaptureProgress >= baseCaptureTime)
                     {
                         cp.CurrentOwningFaction = cp.CurrentDominatingFaction;
                         cp.FightMode = CaptureBaseFightMode.Defending;
                         Logger.Info($"{cp.BaseName} has been captured by faction {cp.CurrentOwningFaction}");
+
+                        SendToAllPlayer.SendToAllPlayers(
+                            $"\n{cp.BaseDisplayName} has been captured by {FactionUtils.GetFactionNameById(cp.CurrentOwningFaction)}!\n");
+                        cp.LastNotifiedFaction = cp.CurrentOwningFaction;
+                    }
+
+                    if (cp.CurrentDominatingFaction != cp.LastNotifiedFaction)
+                    {
+                        SendToAllPlayer.SendToAllPlayers(
+                            $"\n{FactionUtils.GetFactionNameById(cp.CurrentDominatingFaction)} is capturing {cp.BaseDisplayName}\n");
+                        cp.LastNotifiedFaction = cp.CurrentDominatingFaction;
                     }
                 }
             }

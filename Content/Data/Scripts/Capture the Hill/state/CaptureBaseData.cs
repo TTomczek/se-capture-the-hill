@@ -14,6 +14,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
         [ProtoMember(6)] public long CurrentDominatingFaction;
         [ProtoMember(7)] public int CaptureProgress = 0;
         [ProtoMember(8)] public CaptureBaseFightMode FightMode;
+        [ProtoMember(9)] public long LastNotifiedFaction = 0;
 
         public CaptureBaseData()
         {

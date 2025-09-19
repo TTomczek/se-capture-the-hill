@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
@@ -79,11 +80,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
             if (_captureBaseData.CaptureProgress != 0 && _run % 6 == 0)
             {
                 var requiredCaptureTime = GetCaptureTime();
-                var controlPercentage = (float)_captureBaseData.CaptureProgress / requiredCaptureTime * 100;
-                if (_captureBaseData.BaseName.ToLower().Contains("moon"))
-                {
-                    Logger.Info($"{_captureBaseData.CaptureProgress}, {requiredCaptureTime}, {controlPercentage}");
-                }
+                var controlPercentage =
+                    Math.Round((float)_captureBaseData.CaptureProgress / requiredCaptureTime * 100, 1);
 
                 if (_captureBaseData.CurrentOwningFaction == 0)
                 {
