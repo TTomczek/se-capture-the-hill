@@ -40,6 +40,50 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         public int DominanceStrengthSmallGrid = 1;
         public int DominanceStrengthLargeGrid = 2;
 
+        public ModConfiguration()
+        {
+        }
+
+        public ModConfiguration(
+            int groundBaseCaptureTimeInSeconds = 600,
+            int atmosphereBaseCaptureTimeInSeconds = 600,
+            int spaceBaseCaptureTimeInSeconds = 600,
+            int groundBaseCaptureRadius = 150,
+            int atmosphereBaseCaptureRadius = 250,
+            int spaceBaseCaptureRadius = 250,
+            int groundBaseDiscoveryRadius = 10000,
+            int atmosphereBaseDiscoveryRadius = 10000,
+            int spaceBaseDiscoveryRadius = 15000,
+            bool canCaptureFriendlyBases = false,
+            bool canCaptureAlreadyClaimedBases = true,
+            bool canCaptureBasesFromAlreadyCapturedPlanet = true,
+            int pointsForFactionToWin = 2500,
+            int pointsForPlanetDominance = 1,
+            int pointsPerOwnedPlanet = 5,
+            bool broadcastBaseDiscoveryToFaction = true,
+            int dominanceStrengthSmallGrid = 1,
+            int dominanceStrengthLargeGrid = 2
+        )
+        {
+            GroundBaseCaptureTimeInSeconds = groundBaseCaptureTimeInSeconds;
+            AtmosphereBaseCaptureTimeInSeconds = atmosphereBaseCaptureTimeInSeconds;
+            SpaceBaseCaptureTimeInSeconds = spaceBaseCaptureTimeInSeconds;
+            GroundBaseCaptureRadius = groundBaseCaptureRadius;
+            AtmosphereBaseCaptureRadius = atmosphereBaseCaptureRadius;
+            SpaceBaseCaptureRadius = spaceBaseCaptureRadius;
+            GroundBaseDiscoveryRadius = groundBaseDiscoveryRadius;
+            AtmosphereBaseDiscoveryRadius = atmosphereBaseDiscoveryRadius;
+            SpaceBaseDiscoveryRadius = spaceBaseDiscoveryRadius;
+            CanCaptureFriendlyBases = canCaptureFriendlyBases;
+            CanCaptureAlreadyClaimedBases = canCaptureAlreadyClaimedBases;
+            CanCaptureBasesFromAlreadyCapturedPlanet = canCaptureBasesFromAlreadyCapturedPlanet;
+            PointsForFactionToWin = pointsForFactionToWin;
+            PointsForPlanetDominance = pointsForPlanetDominance;
+            PointsPerOwnedPlanet = pointsPerOwnedPlanet;
+            BroadcastBaseDiscoveryToFaction = broadcastBaseDiscoveryToFaction;
+            DominanceStrengthSmallGrid = dominanceStrengthSmallGrid;
+            DominanceStrengthLargeGrid = dominanceStrengthLargeGrid;
+        }
 
         public static void LoadConfiguration(bool forceReload = false)
         {

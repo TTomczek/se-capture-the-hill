@@ -28,6 +28,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 // Nobody is capturing this base
                 if (cp.CurrentDominatingFaction == 0)
                 {
+                    cp.PreviousDominatingFaction = 0;
                     continue;
                 }
 
