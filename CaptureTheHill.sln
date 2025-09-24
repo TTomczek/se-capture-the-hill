@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36301.6 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureTheHill", "CaptureTheHill.csproj", "{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureTheHill", "Mod\CaptureTheHill.csproj", "{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CaptureTheHillTest", "Test\CaptureTheHillTest.csproj", "{FE7AA077-F74F-40EC-B92F-AA92402D6119}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Debug|x64.Build.0 = Debug|x64
 		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Release|x64.ActiveCfg = Release|x64
 		{031C0111-4CCA-42C6-AC3A-ABD4C96BAFBF}.Release|x64.Build.0 = Release|x64
+		{FE7AA077-F74F-40EC-B92F-AA92402D6119}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FE7AA077-F74F-40EC-B92F-AA92402D6119}.Debug|x64.Build.0 = Debug|Any CPU
+		{FE7AA077-F74F-40EC-B92F-AA92402D6119}.Release|x64.ActiveCfg = Release|Any CPU
+		{FE7AA077-F74F-40EC-B92F-AA92402D6119}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

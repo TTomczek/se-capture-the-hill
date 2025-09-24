@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netframework48</TargetFramework>
+        <LangVersion>6</LangVersion>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>disable</Nullable>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+        <GenerateGlobalAssemblyInfo>false</GenerateGlobalAssemblyInfo>
+        <IsTestProject>true</IsTestProject>
+        <PlatformTarget>x64</PlatformTarget>
+        <SpaceEngineersBinCopyLocal>true</SpaceEngineersBinCopyLocal>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.6.4"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.6.4"/>
+        <PackageReference Include="Moq" Version="4.20.72"/>
+        <PackageReference Include="Mal.Mdk2.References" Version="2.2.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Mod\CaptureTheHill.csproj">
+            <IncludeAssets>compile;runtime;build</IncludeAssets>
+            <ExcludeAssets>analyzers</ExcludeAssets>
+        </ProjectReference>
+    </ItemGroup>
+
+    <!-- Kopiert die benötigten Space Engineers-Assemblies zur Laufzeit ins Ausgabeverzeichnis (ohne Hook) -->
+    <Target Name="CopySpaceEngineersAssemblies" AfterTargets="Build" Condition="Exists('$(SpaceEngineersBin64)')">
+        <ItemGroup>
+            <SEAssemblies Include="$(SpaceEngineersBin64)\VRage*.dll;$(SpaceEngineersBin64)\Sandbox*.dll;$(SpaceEngineersBin64)\SpaceEngineers*.dll;$(SpaceEngineersBin64)\Havok*.dll"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(SEAssemblies)"
+              DestinationFolder="$(TargetDir)"
+              SkipUnchangedFiles="true"/>
+    </Target>
+
+</Project>
