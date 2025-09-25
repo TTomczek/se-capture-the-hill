@@ -1,4 +1,5 @@
-﻿using VRage.Utils;
+﻿using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
+using VRage.Utils;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging
 {
@@ -21,7 +22,10 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging
 
         public void Debug(string message)
         {
-            Log(message);
+            if (ModConfiguration.Instance.EnableDebugLogging)
+            {
+                Log(message);
+            }
         }
 
         public void StartLogging()

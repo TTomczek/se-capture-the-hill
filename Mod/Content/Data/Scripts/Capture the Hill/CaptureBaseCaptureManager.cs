@@ -23,7 +23,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                     return;
                 }
 
-                var baseCaptureTime = GetBaseCaptureTime(cp.CaptureBaseType);
+                var baseCaptureTime = ConfigByTypeHelper.GetCaptureTimeByBaseType(cp.CaptureBaseType);
 
                 // Nobody is capturing this base
                 if (cp.CurrentDominatingFaction == 0)
@@ -153,6 +153,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
             var factionName = FactionUtils.GetFactionNameById(winningFaction);
 
+            GameStateAccessor.SetWinnerFactionId(winningFaction);
             var winMessage = $"\n### {factionName} wins the game! ###\n";
             SendToAllPlayer.SendToAllPlayers(winMessage);
             CthLogger.Info($"{factionName} wins");
@@ -182,23 +183,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
             owningFactionId = firstOwningFaction;
             return owningFactionId;
-        }
-
-        private static int GetBaseCaptureTime(CaptureBaseType type)
-        {
-            switch (type)
-            {
-                case CaptureBaseType.Ground:
-                    return ModConfiguration.Instance.GroundBaseCaptureTimeInSeconds;
-                case CaptureBaseType.Atmosphere:
-                    return ModConfiguration.Instance.AtmosphereBaseCaptureTimeInSeconds;
-                case CaptureBaseType.Space:
-                    return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
-                default:
-                    CthLogger.Error(
-                        $"Could not determine base capture time for base type {type}, returning default of 100 seconds");
-                    return 100;
-            }
         }
 
         private static long GetDominatingFaction(List<CaptureBaseData> basesOfPlanet)

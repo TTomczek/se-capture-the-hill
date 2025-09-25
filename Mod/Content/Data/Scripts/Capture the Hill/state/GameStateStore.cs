@@ -16,5 +16,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
         // Dictionary containing the players that discovered a base
         [ProtoMember(3)]
         public Dictionary<string, List<long>> BasePlayerDiscovered = new Dictionary<string, List<long>>();
+
+        // Faction ID of the current winner faction
+        [ProtoMember(4)] public long WinnerFactionId = 0;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using Sandbox.ModAPI;
 using VRage.Utils;
 
@@ -11,7 +12,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging
         private static readonly string LogFileNamePattern = "CaptureTheHill-{0:yyyy-MM-dd_HH-mm-ss}.log";
         private static readonly string LoggingPattern = "{0:yyyy-MM-dd HH:mm:ss.fff} [CTH] [{1}] {2}";
         private static TextWriter _currentLogFileWriter;
-        private static bool _isDebugEnabled = true;
         private static readonly Queue<string> LogQueue = new Queue<string>();
         private static bool _loggerActivated = true;
 
@@ -100,7 +100,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging
 
         private void FormatLog(string message, LogLevel level = LogLevel.Info)
         {
-            if (level == LogLevel.Debug && !_isDebugEnabled)
+            if (level == LogLevel.Debug && !ModConfiguration.Instance.EnableDebugLogging)
             {
                 return;
             }

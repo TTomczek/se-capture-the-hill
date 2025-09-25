@@ -23,6 +23,11 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.server
                 return;
             }
 
+            if (GameStateAccessor.GetWinnerFactionId() != 0)
+            {
+                return;
+            }
+
             RunEverySecond(_ticks);
             RunEveryMinute(_ticks);
             RunEvery30Minutes(_ticks);

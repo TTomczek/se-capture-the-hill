@@ -40,7 +40,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.session.client
         public override void BeforeStart()
         {
             var welcomeMessage =
-                "\nWelcome to Capture the Hill!\nJoin or create faction and explore some planets to start!\nHappy hunting!\nFor a list of commands, type /cth help";
+                "\nWelcome to Capture the Hill!\nJoin or create faction and explore some planets to start!\nHappy hunting, Space Engineer!\nFor a list of commands, type /cth help";
             MyAPIGateway.Utilities.ShowMessage("CTH", welcomeMessage);
         }
 

@@ -40,6 +40,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
         public int DominanceStrengthSmallGrid = 1;
         public int DominanceStrengthLargeGrid = 2;
 
+        public bool EnableDebugLogging = false;
+
         public ModConfiguration()
         {
         }
@@ -62,7 +64,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
             int pointsPerOwnedPlanet = 5,
             bool broadcastBaseDiscoveryToFaction = true,
             int dominanceStrengthSmallGrid = 1,
-            int dominanceStrengthLargeGrid = 2
+            int dominanceStrengthLargeGrid = 2,
+            bool enableDebugLogging = false
         )
         {
             GroundBaseCaptureTimeInSeconds = groundBaseCaptureTimeInSeconds;
@@ -83,6 +86,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
             BroadcastBaseDiscoveryToFaction = broadcastBaseDiscoveryToFaction;
             DominanceStrengthSmallGrid = dominanceStrengthSmallGrid;
             DominanceStrengthLargeGrid = dominanceStrengthLargeGrid;
+            EnableDebugLogging = enableDebugLogging;
         }
 
         public static void LoadConfiguration(bool forceReload = false)

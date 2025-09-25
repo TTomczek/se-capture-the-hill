@@ -140,6 +140,28 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state
             return new List<long>();
         }
 
+        public static long GetWinnerFactionId()
+        {
+            if (_instance == null)
+            {
+                CthLogger.Error("GameStateAccessor: _instance is null in GetWinnerFactionId");
+                return 0;
+            }
+
+            return _instance.WinnerFactionId;
+        }
+
+        public static void SetWinnerFactionId(long factionId)
+        {
+            if (_instance == null)
+            {
+                CthLogger.Error("GameStateAccessor: _instance is null in SetWinnerFactionId");
+                return;
+            }
+
+            _instance.WinnerFactionId = factionId;
+        }
+
         public static void SaveState()
         {
             CthLogger.Info("Saving game state...");
