@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
+using Sandbox.Common.ObjectBuilders;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -210,9 +212,20 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                 spawnedGridEntity.Editable = false;
                 spawnedGridEntity.Save = true;
 
+                CreateSafeZoneAroundBaseGrid(spawnedGrid, baseType);
+
                 CthLogger.Info(
                     $"Handling spawn of capture base {spawnedGrid.Name} of type {baseType} on {planetName}.");
             }
+        }
+
+        private static void CreateSafeZoneAroundBaseGrid(IMyCubeGrid baseGrid, CaptureBaseType baseType)
+        {
+            var safeZone = MySessionComponentSafeZones.CrateSafeZone(baseGrid.PositionComp.WorldMatrixRef,
+                MySafeZoneShape.Sphere,
+                MySafeZoneAccess.Blacklist, Array.Empty<long>(), Array.Empty<long>(),
+                ConfigByTypeHelper.GetCaptureRadiusByBaseType(baseType), true, false);
+            MyEntities.Add(safeZone);
         }
     }
 }
