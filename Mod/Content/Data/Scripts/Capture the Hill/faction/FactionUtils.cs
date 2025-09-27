@@ -34,6 +34,12 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.faction
             return playerIds.Select(playerId => MyAPIGateway.Players.TryGetSteamId(playerId)).ToList();
         }
 
+        public static long GetOneFactionLeaderId(long factionId)
+        {
+            var faction = GetFactionById(factionId);
+            return faction?.Members.FirstOrDefault(m => m.Value.IsLeader).Key ?? 0;
+        }
+
         private static IMyFaction GetFactionById(long factionId)
         {
             return MyAPIGateway.Session.Factions.TryGetFactionById(factionId);

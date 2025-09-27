@@ -1,4 +1,5 @@
 ﻿using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
+using CaptureTheHill.logging;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
 {
@@ -15,6 +16,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
                 case CaptureBaseType.Space:
                     return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
                 default:
+                    CthLogger.Error(
+                        $"Unknown capture base type: {baseType} for discovery radius, Using space base discovery radius as fallback");
                     return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
             }
         }
@@ -30,6 +33,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
                 case CaptureBaseType.Space:
                     return ModConfiguration.Instance.SpaceBaseCaptureRadius;
                 default:
+                    CthLogger.Error(
+                        $"Unknown capture base type: {baseType} for capture radius, Using space base capture radius as fallback");
                     return ModConfiguration.Instance.SpaceBaseCaptureRadius;
             }
         }
@@ -45,6 +50,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config
                 case CaptureBaseType.Space:
                     return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
                 default:
+                    CthLogger.Error(
+                        $"Unknown capture base type: {baseType} for capture time, Using space base time as fallback");
                     return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
             }
         }

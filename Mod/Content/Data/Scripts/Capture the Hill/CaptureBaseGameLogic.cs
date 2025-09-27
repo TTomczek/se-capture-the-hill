@@ -12,6 +12,7 @@ using Sandbox.ModAPI;
 using VRage.Game;
 using VRage.Game.Components;
 using VRage.Game.Entity;
+using VRage.Game.GUI.TextPanel;
 using VRage.Game.ModAPI;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
@@ -48,10 +49,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
         public override void UpdateOnceBeforeFrame()
         {
-            base.UpdateOnceBeforeFrame();
-
             _captureSphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(), GetCaptureRadius());
-            _discoverySphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(), GetDiscoveryRadius());
+            _discoverySphere = new BoundingSphereD(CaptureBaseGrid.PositionComp.GetPosition(),
+                ConfigByTypeHelper.GetDiscoveryRadiusByBaseType(_captureBaseData.CaptureBaseType));
 
             NeedsUpdate = MyEntityUpdateEnum.EACH_10TH_FRAME | MyEntityUpdateEnum.EACH_100TH_FRAME;
             CthLogger.Debug("CaptureBaseGameLogic initialized for " + CaptureBaseGrid.DisplayName);
@@ -59,8 +59,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
         public override void UpdateBeforeSimulation()
         {
-            base.UpdateBeforeSimulation();
-
             GameStateAccessor.GetBaseDataByBaseName(CaptureBaseGrid.Name, ref _captureBaseData);
 
             if (_captureBaseData == null)
@@ -75,12 +73,10 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
         public override void UpdateAfterSimulation10()
         {
-            base.UpdateAfterSimulation10();
-
             _run++;
             if (_captureBaseData.CaptureProgress != 0 && _run % 6 == 0)
             {
-                var requiredCaptureTime = GetCaptureTime();
+                var requiredCaptureTime = ConfigByTypeHelper.GetCaptureTimeByBaseType(_captureBaseData.CaptureBaseType);
                 var controlPercentage =
                     Math.Round((float)_captureBaseData.CaptureProgress / requiredCaptureTime * 100, 1);
 
@@ -101,10 +97,9 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 
         public override void UpdateAfterSimulation100()
         {
-            base.UpdateAfterSimulation100();
-
             CheckPlayerDiscovery();
             CheckCapturing();
+            SetFactionLogoToBaseLcds();
             CheckUranium();
         }
 
@@ -126,38 +121,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                 default:
                     CthLogger.Error($"Unknown capture base type: {_captureBaseData.CaptureBaseType}");
                     return ModConfiguration.Instance.SpaceBaseCaptureRadius;
-            }
-        }
-
-        private float GetDiscoveryRadius()
-        {
-            switch (_captureBaseData.CaptureBaseType)
-            {
-                case CaptureBaseType.Ground:
-                    return ModConfiguration.Instance.GroundBaseDiscoveryRadius;
-                case CaptureBaseType.Atmosphere:
-                    return ModConfiguration.Instance.AtmosphereBaseDiscoveryRadius;
-                case CaptureBaseType.Space:
-                    return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
-                default:
-                    CthLogger.Error($"Unknown capture base type: {_captureBaseData.CaptureBaseType}");
-                    return ModConfiguration.Instance.SpaceBaseDiscoveryRadius;
-            }
-        }
-
-        private int GetCaptureTime()
-        {
-            switch (_captureBaseData.CaptureBaseType)
-            {
-                case CaptureBaseType.Ground:
-                    return ModConfiguration.Instance.GroundBaseCaptureTimeInSeconds;
-                case CaptureBaseType.Atmosphere:
-                    return ModConfiguration.Instance.AtmosphereBaseCaptureTimeInSeconds;
-                case CaptureBaseType.Space:
-                    return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
-                default:
-                    CthLogger.Warning($"Unknown capture base type: {_captureBaseData.CaptureBaseType}");
-                    return ModConfiguration.Instance.SpaceBaseCaptureTimeInSeconds;
             }
         }
 
@@ -393,6 +356,40 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
                         inventory.AddItems(10, uraniumIngot);
                     }
                 }
+            }
+        }
+
+        private void SetFactionLogoToBaseLcds()
+        {
+            var blocks = new List<IMyTerminalBlock>();
+            MyAPIGateway.TerminalActionsHelper.GetTerminalSystemForGrid(CaptureBaseGrid)
+                .GetBlocksOfType<IMyTextPanel>(blocks, b => b.CustomName.Contains("[cp-lcd]"));
+
+            if (blocks.Count == 0)
+            {
+                return;
+            }
+
+            var currentOwningFactionId = _captureBaseData.CurrentOwningFaction;
+
+            foreach (var lcd in blocks.OfType<IMyTextPanel>())
+            {
+                if (currentOwningFactionId == 0)
+                {
+                    CaptureBaseGrid.ChangeGridOwner(0, MyOwnershipShareModeEnum.None);
+                    lcd.WriteText("");
+                    lcd.ContentType = ContentType.TEXT_AND_IMAGE;
+                    lcd.Script = "";
+                }
+                else
+                {
+                    var factionLeaderId = FactionUtils.GetOneFactionLeaderId(currentOwningFactionId);
+                    CaptureBaseGrid.ChangeGridOwner(factionLeaderId, MyOwnershipShareModeEnum.None);
+                    lcd.ContentType = ContentType.SCRIPT;
+                    lcd.Script = "TSS_FactionIcon";
+                }
+
+                lcd.Enabled = true;
             }
         }
     }

@@ -26,16 +26,25 @@
                     <CubeBlocks>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
                             <SubtypeName>LargeBlockSmallGenerator</SubtypeName>
-                            <EntityId>75160328766297020</EntityId>
-                            <Owner>144115188075855895</Owner>
+                            <EntityId>90017713800562511</EntityId>
+                            <BlockOrientation Forward="Up" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                             <ComponentContainer>
                                 <Components>
                                     <ComponentData>
                                         <TypeId>MyInventoryBase</TypeId>
                                         <Component xsi:type="MyObjectBuilder_Inventory">
                                             <CanPutItems>true</CanPutItems>
-                                            <Items/>
-                                            <nextItemId>0</nextItemId>
+                                            <Items>
+                                                <MyObjectBuilder_InventoryItem>
+                                                    <Amount>19230.769447</Amount>
+                                                    <PhysicalContent xsi:type="MyObjectBuilder_Ingot">
+                                                        <SubtypeName>Uranium</SubtypeName>
+                                                    </PhysicalContent>
+                                                    <ItemId>0</ItemId>
+                                                </MyObjectBuilder_InventoryItem>
+                                            </Items>
+                                            <nextItemId>1</nextItemId>
                                             <Volume>1</Volume>
                                             <Mass>9223372036854.775807</Mass>
                                             <MaxItemCount>2147483647</MaxItemCount>
@@ -53,7 +62,7 @@
                                             <TimerEnabled>false</TimerEnabled>
                                             <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                                             <TimerType>Frame100</TimerType>
-                                            <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                                            <FramesFromLastTrigger>400</FramesFromLastTrigger>
                                             <TimerTickInFrames>900</TimerTickInFrames>
                                             <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                                         </Component>
@@ -64,40 +73,175 @@
                             <ShowInTerminal>true</ShowInTerminal>
                             <ShowInToolbarConfig>true</ShowInToolbarConfig>
                             <ShowInInventory>true</ShowInInventory>
-                            <NumberInGrid>1</NumberInGrid>
+                            <NumberInGrid>2</NumberInGrid>
                             <Enabled>true</Enabled>
-                            <Capacity>1</Capacity>
+                            <Capacity>19230.77</Capacity>
                         </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Beacon">
-                            <SubtypeName>LargeBlockBeacon</SubtypeName>
-                            <EntityId>95354361532251475</EntityId>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
                             <Min x="0" y="1" z="0"/>
-                            <BlockOrientation Forward="Left" Up="Up"/>
-                            <Owner>144115188075855895</Owner>
-                            <ShareMode>Faction</ShareMode>
-                            <ShowOnHUD>false</ShowOnHUD>
-                            <ShowInTerminal>true</ShowInTerminal>
-                            <ShowInToolbarConfig>true</ShowInToolbarConfig>
-                            <ShowInInventory>true</ShowInInventory>
-                            <NumberInGrid>1</NumberInGrid>
-                            <Enabled>false</Enabled>
-                            <BroadcastRadius>20000</BroadcastRadius>
-                            <HudText/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="2" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="0" y="0" z="-1"/>
+                            <BlockOrientation Forward="Down" Up="Forward"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="0" z="0"/>
+                            <BlockOrientation Forward="Down" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="0" y="0" z="1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="0" z="0"/>
+                            <BlockOrientation Forward="Down" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
+                            <Min x="-1" y="0" z="1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
+                            <Min x="-1" y="0" z="-1"/>
+                            <BlockOrientation Forward="Down" Up="Forward"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
+                            <Min x="1" y="0" z="-1"/>
+                            <BlockOrientation Forward="Down" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
+                            <Min x="1" y="0" z="1"/>
+                            <BlockOrientation Forward="Forward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
+                            <Min x="-1" y="-1" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="-1" z="1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
+                            <Min x="1" y="-1" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="-1" z="-1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="-1" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="-1" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="-1" z="1"/>
+                            <BlockOrientation Forward="Forward" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="-1" z="1"/>
+                            <BlockOrientation Forward="Forward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="3" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="3" z="0"/>
+                            <BlockOrientation Forward="Up" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="-1" y="4" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="5" z="0"/>
+                            <BlockOrientation Forward="Down" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="4" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="5" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="4" z="-1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="1" y="4" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="4" z="1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+                            <Min x="0" y="6" z="0"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_RadioAntenna">
                             <SubtypeName>LargeBlockCompactRadioAntenna</SubtypeName>
-                            <EntityId>91802540738323789</EntityId>
-                            <Min x="0" y="3" z="0"/>
+                            <EntityId>107502285531234247</EntityId>
+                            <Min x="0" y="7" z="0"/>
                             <BlockOrientation Forward="Left" Up="Up"/>
-                            <Owner>144115188075855895</Owner>
-                            <ShareMode>Faction</ShareMode>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                             <ShowOnHUD>false</ShowOnHUD>
                             <ShowInTerminal>true</ShowInTerminal>
                             <ShowInToolbarConfig>true</ShowInToolbarConfig>
                             <ShowInInventory>true</ShowInInventory>
-                            <NumberInGrid>1</NumberInGrid>
+                            <NumberInGrid>2</NumberInGrid>
                             <Enabled>true</Enabled>
-                            <BroadcastRadius>1000</BroadcastRadius>
+                            <BroadcastRadius>4999.99951</BroadcastRadius>
                             <ShowShipName>true</ShowShipName>
                             <EnableBroadcasting>true</EnableBroadcasting>
                             <AttachedPB>0</AttachedPB>
@@ -106,86 +250,500 @@
                             <HudText/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="0" y="0" z="-1"/>
-                            <BlockOrientation Forward="Down" Up="Forward"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="0" y="5" z="1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="1" y="0" z="0"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="5" z="0"/>
                             <BlockOrientation Forward="Down" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="0" y="0" z="1"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="-1" y="0" z="0"/>
-                            <BlockOrientation Forward="Down" Up="Left"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
-                            <Min x="-1" y="0" z="1"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
-                            <Min x="-1" y="0" z="-1"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="0" y="5" z="-1"/>
                             <BlockOrientation Forward="Down" Up="Forward"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
-                            <Min x="1" y="0" z="-1"/>
-                            <BlockOrientation Forward="Down" Up="Right"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="0" y="3" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Down"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorCorner</SubtypeName>
-                            <Min x="1" y="0" z="1"/>
-                            <BlockOrientation Forward="Forward" Up="Right"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="3" z="0"/>
+                            <BlockOrientation Forward="Up" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
-                            <Min x="-1" y="-1" z="0"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="0" y="3" z="1"/>
+                            <BlockOrientation Forward="Up" Up="Backward"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
-                            <Min x="0" y="-1" z="1"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
-                            <Min x="1" y="-1" z="0"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorBlock</SubtypeName>
-                            <Min x="0" y="-1" z="-1"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="1" y="-1" z="-1"/>
-                            <BlockOrientation Forward="Backward" Up="Right"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="-1" y="-1" z="-1"/>
-                            <BlockOrientation Forward="Backward" Up="Left"/>
-                        </MyObjectBuilder_CubeBlock>
-                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="-1" y="-1" z="1"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="4" z="1"/>
                             <BlockOrientation Forward="Forward" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
                         </MyObjectBuilder_CubeBlock>
                         <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
-                            <SubtypeName>LargeHeavyBlockArmorSlope</SubtypeName>
-                            <Min x="1" y="-1" z="1"/>
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="4" z="1"/>
                             <BlockOrientation Forward="Forward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="1" y="4" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorSlope</SubtypeName>
+                            <Min x="-1" y="4" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Left"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="-1" y="5" z="-1"/>
+                            <BlockOrientation Forward="Down" Up="Forward"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="1" y="5" z="-1"/>
+                            <BlockOrientation Forward="Down" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="1" y="5" z="1"/>
+                            <BlockOrientation Forward="Forward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="-1" y="5" z="1"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="-1" y="3" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Down"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="-1" y="3" z="1"/>
+                            <BlockOrientation Forward="Up" Up="Backward"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="1" y="3" z="1"/>
+                            <BlockOrientation Forward="Up" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+                            <SubtypeName>LargeBlockArmorCorner</SubtypeName>
+                            <Min x="1" y="3" z="-1"/>
+                            <BlockOrientation Forward="Backward" Up="Right"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_TextPanel">
+                            <SubtypeName>LargeLCDPanel</SubtypeName>
+                            <EntityId>88719056579170333</EntityId>
+                            <Min x="0" y="4" z="-2"/>
+                            <BlockOrientation Forward="Backward" Up="Up"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                            <ComponentContainer>
+                                <Components>
+                                    <ComponentData>
+                                        <TypeId>MyLcdSurfaceComponent</TypeId>
+                                        <Component xsi:type="MyObjectBuilder_LcdSurfaceComponent">
+                                            <SelectedRotationIndex>0</SelectedRotationIndex>
+                                            <TextPanelContent>
+                                                <ChangeInterval>0</ChangeInterval>
+                                                <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                                                <FontSize>1</FontSize>
+                                                <ShowText>NONE</ShowText>
+                                                <FontColor>
+                                                    <PackedValue>4294967295</PackedValue>
+                                                    <X>255</X>
+                                                    <Y>255</Y>
+                                                    <Z>255</Z>
+                                                    <R>255</R>
+                                                    <G>255</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </FontColor>
+                                                <BackgroundColor>
+                                                    <PackedValue>4278190080</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>0</Y>
+                                                    <Z>0</Z>
+                                                    <R>0</R>
+                                                    <G>0</G>
+                                                    <B>0</B>
+                                                    <A>255</A>
+                                                </BackgroundColor>
+                                                <CurrentShownTexture>0</CurrentShownTexture>
+                                                <SelectedScript/>
+                                                <TextPadding>2</TextPadding>
+                                                <ScriptBackgroundColor>
+                                                    <PackedValue>4288108544</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>88</Y>
+                                                    <Z>151</Z>
+                                                    <R>0</R>
+                                                    <G>88</G>
+                                                    <B>151</B>
+                                                    <A>255</A>
+                                                </ScriptBackgroundColor>
+                                                <ScriptForegroundColor>
+                                                    <PackedValue>4294962611</PackedValue>
+                                                    <X>179</X>
+                                                    <Y>237</Y>
+                                                    <Z>255</Z>
+                                                    <R>179</R>
+                                                    <G>237</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </ScriptForegroundColor>
+                                                <Sprites>
+                                                    <Length>0</Length>
+                                                </Sprites>
+                                            </TextPanelContent>
+                                        </Component>
+                                    </ComponentData>
+                                </Components>
+                            </ComponentContainer>
+                            <CustomName>[cp-lcd] 1</CustomName>
+                            <ShowOnHUD>false</ShowOnHUD>
+                            <ShowInTerminal>true</ShowInTerminal>
+                            <ShowInToolbarConfig>true</ShowInToolbarConfig>
+                            <ShowInInventory>true</ShowInInventory>
+                            <NumberInGrid>1</NumberInGrid>
+                            <Enabled>true</Enabled>
+                            <Description/>
+                            <Title>Title</Title>
+                            <AccessFlag>READ_AND_WRITE_FACTION</AccessFlag>
+                            <ChangeInterval>0</ChangeInterval>
+                            <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                            <FontSize>1</FontSize>
+                            <PublicDescription/>
+                            <PublicTitle>Public title</PublicTitle>
+                            <ShowText>NONE</ShowText>
+                            <FontColor xsi:nil="true"/>
+                            <BackgroundColor xsi:nil="true"/>
+                            <CurrentShownTexture>0</CurrentShownTexture>
+                            <TextPadding>2</TextPadding>
+                            <Version>0</Version>
+                            <ScriptBackgroundColor xsi:nil="true"/>
+                            <ScriptForegroundColor xsi:nil="true"/>
+                            <Sprites>
+                                <Length>0</Length>
+                            </Sprites>
+                            <SelectedRotationIndex xsi:nil="true"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_TextPanel">
+                            <SubtypeName>LargeLCDPanel</SubtypeName>
+                            <EntityId>122757135204587458</EntityId>
+                            <Min x="-2" y="4" z="0"/>
+                            <BlockOrientation Forward="Right" Up="Up"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                            <ComponentContainer>
+                                <Components>
+                                    <ComponentData>
+                                        <TypeId>MyLcdSurfaceComponent</TypeId>
+                                        <Component xsi:type="MyObjectBuilder_LcdSurfaceComponent">
+                                            <SelectedRotationIndex>0</SelectedRotationIndex>
+                                            <TextPanelContent>
+                                                <ChangeInterval>0</ChangeInterval>
+                                                <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                                                <FontSize>1</FontSize>
+                                                <ShowText>NONE</ShowText>
+                                                <FontColor>
+                                                    <PackedValue>4294967295</PackedValue>
+                                                    <X>255</X>
+                                                    <Y>255</Y>
+                                                    <Z>255</Z>
+                                                    <R>255</R>
+                                                    <G>255</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </FontColor>
+                                                <BackgroundColor>
+                                                    <PackedValue>4278190080</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>0</Y>
+                                                    <Z>0</Z>
+                                                    <R>0</R>
+                                                    <G>0</G>
+                                                    <B>0</B>
+                                                    <A>255</A>
+                                                </BackgroundColor>
+                                                <CurrentShownTexture>0</CurrentShownTexture>
+                                                <SelectedScript/>
+                                                <TextPadding>2</TextPadding>
+                                                <ScriptBackgroundColor>
+                                                    <PackedValue>4288108544</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>88</Y>
+                                                    <Z>151</Z>
+                                                    <R>0</R>
+                                                    <G>88</G>
+                                                    <B>151</B>
+                                                    <A>255</A>
+                                                </ScriptBackgroundColor>
+                                                <ScriptForegroundColor>
+                                                    <PackedValue>4294962611</PackedValue>
+                                                    <X>179</X>
+                                                    <Y>237</Y>
+                                                    <Z>255</Z>
+                                                    <R>179</R>
+                                                    <G>237</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </ScriptForegroundColor>
+                                                <Sprites>
+                                                    <Length>0</Length>
+                                                </Sprites>
+                                            </TextPanelContent>
+                                        </Component>
+                                    </ComponentData>
+                                </Components>
+                            </ComponentContainer>
+                            <CustomName>[cp-lcd] 2</CustomName>
+                            <ShowOnHUD>false</ShowOnHUD>
+                            <ShowInTerminal>true</ShowInTerminal>
+                            <ShowInToolbarConfig>true</ShowInToolbarConfig>
+                            <ShowInInventory>true</ShowInInventory>
+                            <NumberInGrid>2</NumberInGrid>
+                            <Enabled>true</Enabled>
+                            <Description/>
+                            <Title>Title</Title>
+                            <AccessFlag>READ_AND_WRITE_FACTION</AccessFlag>
+                            <ChangeInterval>0</ChangeInterval>
+                            <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                            <FontSize>1</FontSize>
+                            <PublicDescription/>
+                            <PublicTitle>Public title</PublicTitle>
+                            <ShowText>NONE</ShowText>
+                            <FontColor xsi:nil="true"/>
+                            <BackgroundColor xsi:nil="true"/>
+                            <CurrentShownTexture>0</CurrentShownTexture>
+                            <TextPadding>2</TextPadding>
+                            <Version>0</Version>
+                            <ScriptBackgroundColor xsi:nil="true"/>
+                            <ScriptForegroundColor xsi:nil="true"/>
+                            <Sprites>
+                                <Length>0</Length>
+                            </Sprites>
+                            <SelectedRotationIndex xsi:nil="true"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_TextPanel">
+                            <SubtypeName>LargeLCDPanel</SubtypeName>
+                            <EntityId>89553754905863348</EntityId>
+                            <Min x="0" y="4" z="2"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                            <ComponentContainer>
+                                <Components>
+                                    <ComponentData>
+                                        <TypeId>MyLcdSurfaceComponent</TypeId>
+                                        <Component xsi:type="MyObjectBuilder_LcdSurfaceComponent">
+                                            <SelectedRotationIndex>0</SelectedRotationIndex>
+                                            <TextPanelContent>
+                                                <ChangeInterval>0</ChangeInterval>
+                                                <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                                                <FontSize>1</FontSize>
+                                                <ShowText>NONE</ShowText>
+                                                <FontColor>
+                                                    <PackedValue>4294967295</PackedValue>
+                                                    <X>255</X>
+                                                    <Y>255</Y>
+                                                    <Z>255</Z>
+                                                    <R>255</R>
+                                                    <G>255</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </FontColor>
+                                                <BackgroundColor>
+                                                    <PackedValue>4278190080</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>0</Y>
+                                                    <Z>0</Z>
+                                                    <R>0</R>
+                                                    <G>0</G>
+                                                    <B>0</B>
+                                                    <A>255</A>
+                                                </BackgroundColor>
+                                                <CurrentShownTexture>0</CurrentShownTexture>
+                                                <SelectedScript/>
+                                                <TextPadding>2</TextPadding>
+                                                <ScriptBackgroundColor>
+                                                    <PackedValue>4288108544</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>88</Y>
+                                                    <Z>151</Z>
+                                                    <R>0</R>
+                                                    <G>88</G>
+                                                    <B>151</B>
+                                                    <A>255</A>
+                                                </ScriptBackgroundColor>
+                                                <ScriptForegroundColor>
+                                                    <PackedValue>4294962611</PackedValue>
+                                                    <X>179</X>
+                                                    <Y>237</Y>
+                                                    <Z>255</Z>
+                                                    <R>179</R>
+                                                    <G>237</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </ScriptForegroundColor>
+                                                <Sprites>
+                                                    <Length>0</Length>
+                                                </Sprites>
+                                            </TextPanelContent>
+                                        </Component>
+                                    </ComponentData>
+                                </Components>
+                            </ComponentContainer>
+                            <CustomName>[cp-lcd] 3</CustomName>
+                            <ShowOnHUD>false</ShowOnHUD>
+                            <ShowInTerminal>true</ShowInTerminal>
+                            <ShowInToolbarConfig>true</ShowInToolbarConfig>
+                            <ShowInInventory>true</ShowInInventory>
+                            <NumberInGrid>3</NumberInGrid>
+                            <Enabled>true</Enabled>
+                            <Description/>
+                            <Title>Title</Title>
+                            <AccessFlag>READ_AND_WRITE_FACTION</AccessFlag>
+                            <ChangeInterval>0</ChangeInterval>
+                            <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                            <FontSize>1</FontSize>
+                            <PublicDescription/>
+                            <PublicTitle>Public title</PublicTitle>
+                            <ShowText>NONE</ShowText>
+                            <FontColor xsi:nil="true"/>
+                            <BackgroundColor xsi:nil="true"/>
+                            <CurrentShownTexture>0</CurrentShownTexture>
+                            <TextPadding>2</TextPadding>
+                            <Version>0</Version>
+                            <ScriptBackgroundColor xsi:nil="true"/>
+                            <ScriptForegroundColor xsi:nil="true"/>
+                            <Sprites>
+                                <Length>0</Length>
+                            </Sprites>
+                            <SelectedRotationIndex xsi:nil="true"/>
+                        </MyObjectBuilder_CubeBlock>
+                        <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_TextPanel">
+                            <SubtypeName>LargeLCDPanel</SubtypeName>
+                            <EntityId>74801676806690317</EntityId>
+                            <Min x="2" y="4" z="0"/>
+                            <BlockOrientation Forward="Left" Up="Up"/>
+                            <ColorMaskHSV x="0" y="-0.8" z="0.55"/>
+                            <ComponentContainer>
+                                <Components>
+                                    <ComponentData>
+                                        <TypeId>MyLcdSurfaceComponent</TypeId>
+                                        <Component xsi:type="MyObjectBuilder_LcdSurfaceComponent">
+                                            <SelectedRotationIndex>0</SelectedRotationIndex>
+                                            <TextPanelContent>
+                                                <ChangeInterval>0</ChangeInterval>
+                                                <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                                                <FontSize>1</FontSize>
+                                                <ShowText>NONE</ShowText>
+                                                <FontColor>
+                                                    <PackedValue>4294967295</PackedValue>
+                                                    <X>255</X>
+                                                    <Y>255</Y>
+                                                    <Z>255</Z>
+                                                    <R>255</R>
+                                                    <G>255</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </FontColor>
+                                                <BackgroundColor>
+                                                    <PackedValue>4278190080</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>0</Y>
+                                                    <Z>0</Z>
+                                                    <R>0</R>
+                                                    <G>0</G>
+                                                    <B>0</B>
+                                                    <A>255</A>
+                                                </BackgroundColor>
+                                                <CurrentShownTexture>0</CurrentShownTexture>
+                                                <SelectedScript/>
+                                                <TextPadding>2</TextPadding>
+                                                <ScriptBackgroundColor>
+                                                    <PackedValue>4288108544</PackedValue>
+                                                    <X>0</X>
+                                                    <Y>88</Y>
+                                                    <Z>151</Z>
+                                                    <R>0</R>
+                                                    <G>88</G>
+                                                    <B>151</B>
+                                                    <A>255</A>
+                                                </ScriptBackgroundColor>
+                                                <ScriptForegroundColor>
+                                                    <PackedValue>4294962611</PackedValue>
+                                                    <X>179</X>
+                                                    <Y>237</Y>
+                                                    <Z>255</Z>
+                                                    <R>179</R>
+                                                    <G>237</G>
+                                                    <B>255</B>
+                                                    <A>255</A>
+                                                </ScriptForegroundColor>
+                                                <Sprites>
+                                                    <Length>0</Length>
+                                                </Sprites>
+                                            </TextPanelContent>
+                                        </Component>
+                                    </ComponentData>
+                                </Components>
+                            </ComponentContainer>
+                            <CustomName>[cp-lcd] 4</CustomName>
+                            <ShowOnHUD>false</ShowOnHUD>
+                            <ShowInTerminal>true</ShowInTerminal>
+                            <ShowInToolbarConfig>true</ShowInToolbarConfig>
+                            <ShowInInventory>true</ShowInInventory>
+                            <NumberInGrid>4</NumberInGrid>
+                            <Enabled>true</Enabled>
+                            <Description/>
+                            <Title>Title</Title>
+                            <AccessFlag>READ_AND_WRITE_FACTION</AccessFlag>
+                            <ChangeInterval>0</ChangeInterval>
+                            <Font Type="MyObjectBuilder_FontDefinition" Subtype="Debug"/>
+                            <FontSize>1</FontSize>
+                            <PublicDescription/>
+                            <PublicTitle>Public title</PublicTitle>
+                            <ShowText>NONE</ShowText>
+                            <FontColor xsi:nil="true"/>
+                            <BackgroundColor xsi:nil="true"/>
+                            <CurrentShownTexture>0</CurrentShownTexture>
+                            <TextPadding>2</TextPadding>
+                            <Version>0</Version>
+                            <ScriptBackgroundColor xsi:nil="true"/>
+                            <ScriptForegroundColor xsi:nil="true"/>
+                            <Sprites>
+                                <Length>0</Length>
+                            </Sprites>
+                            <SelectedRotationIndex xsi:nil="true"/>
                         </MyObjectBuilder_CubeBlock>
                     </CubeBlocks>
                     <DisplayName>CaptureFlag</DisplayName>
                     <DestructibleBlocks>false</DestructibleBlocks>
                     <CreatePhysics>false</CreatePhysics>
-                    <EnableSmallToLargeConnections>false</EnableSmallToLargeConnections>
                     <IsRespawnGrid>false</IsRespawnGrid>
-                    <LocalCoordSys>0</LocalCoordSys>
+                    <LocalCoordSys>2</LocalCoordSys>
                     <TargetingTargets/>
                     <GridPresenceTier>Tier1</GridPresenceTier>
                     <NPCGridClaimElapsed xsi:nil="true"/>
