@@ -20,7 +20,7 @@ using VRageMath;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill
 {
-    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_CubeGrid), false, "CTH_Capture_Base")]
+    [MyEntityComponentDescriptor(typeof(MyObjectBuilder_CubeGrid), false, "cth-capture-base")]
     public class CaptureBaseGameLogic : MyGameLogicComponent
     {
         private BoundingSphereD _captureSphere;

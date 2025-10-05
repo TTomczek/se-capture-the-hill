@@ -38,7 +38,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging
 
         private void Log(string message)
         {
-            MyLog.Default.WriteLineAndConsole(message);
+            MyLog.Default.WriteLineAndConsole("CTH -" + message);
         }
     }
 }

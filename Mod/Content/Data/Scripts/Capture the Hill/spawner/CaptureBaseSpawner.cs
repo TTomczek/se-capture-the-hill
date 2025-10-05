@@ -66,10 +66,10 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                     {
                         var groundBasePosition = planetBasePositionOnGround.Pop();
                         groundBasePosition =
-                            PositionTools.AdjustPositionForGroundContact(planet, "CTH_Capture_Base",
+                            PositionTools.AdjustPositionForGroundContact(planet, "cth-capture-base-ground",
                                 groundBasePosition);
                         CreateCaptureBase(planet.Name, CaptureBaseType.Ground, groundBasePosition,
-                            planetCenter, "CTH_Capture_Base");
+                            planetCenter, "cth-capture-base-ground");
                         CthLogger.Info("Created ground base for " + planet.Name);
                     }
                     else
@@ -91,7 +91,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                             PositionTools.FindCorrectHeightForPositionForDesiredGravity(atmosphereBasePositionOnGround,
                                 planetGravity / 2);
                         CreateCaptureBase(planet.Name, CaptureBaseType.Atmosphere, atmosphereBasePosition,
-                            planetCenter, "CTH_Capture_Base");
+                            planetCenter, "cth-capture-base-atmo");
                         CthLogger.Info("Created atmosphere base for " + planet.Name);
                     }
                     else
@@ -110,7 +110,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                                 0.0f);
                         var higherSpaceBasePosition = spaceBasePosition + Vector3D.Up * 1000;
                         CreateCaptureBase(planet.Name, CaptureBaseType.Space, higherSpaceBasePosition,
-                            planetCenter, "CTH_Capture_Base");
+                            planetCenter, "cth-capture-base-space");
                         CthLogger.Info("Created space base for " + planet.Name);
                     }
                     else

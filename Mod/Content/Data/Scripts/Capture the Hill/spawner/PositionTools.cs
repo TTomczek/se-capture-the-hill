@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CaptureTheHill.logging;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
@@ -110,14 +111,14 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
         {
             if (planet == null)
             {
-                MyAPIGateway.Utilities.ShowMessage("Spawn", "Kein Planet übergeben.");
+                CthLogger.Warning("No planet found, cannot adjust position for ground contact.");
                 return position;
             }
 
             var def = MyDefinitionManager.Static.GetPrefabDefinition(prefabSubtypeId);
             if (def == null || def.CubeGrids == null || def.CubeGrids.Length == 0)
             {
-                MyAPIGateway.Utilities.ShowMessage("Spawn", $"Prefab '{prefabSubtypeId}' nicht gefunden oder leer.");
+                CthLogger.Warning($"Prefab '{prefabSubtypeId}'not found or doesn't contain any grids.");
                 return position;
             }
 
