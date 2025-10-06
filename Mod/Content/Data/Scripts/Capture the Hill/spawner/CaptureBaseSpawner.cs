@@ -224,7 +224,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
             var safeZone = MySessionComponentSafeZones.CrateSafeZone(baseGrid.PositionComp.WorldMatrixRef,
                 MySafeZoneShape.Sphere,
                 MySafeZoneAccess.Blacklist, Array.Empty<long>(), Array.Empty<long>(),
-                ConfigByTypeHelper.GetCaptureRadiusByBaseType(baseType), true, false);
+                ConfigByTypeHelper.GetCaptureRadiusByBaseType(baseType), true, false,
+                name: $"{baseGrid.Name}-safezone");
             MyEntities.Add(safeZone);
         }
     }

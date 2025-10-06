@@ -139,7 +139,7 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
 
             if (minCellY == int.MaxValue)
             {
-                MyAPIGateway.Utilities.ShowMessage("Spawn", "Prefab enthält keine Blöcke.");
+                CthLogger.Warning($"Grid in prefab '{prefabSubtypeId}' has no blocks?");
                 return position;
             }
 
