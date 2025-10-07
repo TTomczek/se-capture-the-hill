@@ -2,11 +2,11 @@
 <Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Prefabs>
         <Prefab xsi:type="MyObjectBuilder_PrefabDefinition">
-            <Id Type="MyObjectBuilder_PrefabDefinition" Subtype="CTH_Capture_Base"/>
+            <Id Type="MyObjectBuilder_PrefabDefinition" Subtype="cth-capture-base-beacon"/>
             <DisplayName>Capture Base</DisplayName>
             <CubeGrids>
                 <CubeGrid>
-                    <SubtypeName>CTH_Capture_Base</SubtypeName>
+                    <SubtypeName>cth-capture-base</SubtypeName>
                     <EntityId>137285487862142933</EntityId>
                     <PersistentFlags>InScene</PersistentFlags>
                     <Name>137285487862142933</Name>
