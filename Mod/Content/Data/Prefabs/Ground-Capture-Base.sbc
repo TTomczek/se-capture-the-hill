@@ -12,7 +12,7 @@
             <DLC>DecorativeBlocks3</DLC>
             <CubeGrids>
                 <CubeGrid>
-                    <SubtypeName/>
+                    <SubtypeName>cth-capture-base</SubtypeName>
                     <EntityId>125896255994392287</EntityId>
                     <PersistentFlags>InScene</PersistentFlags>
                     <Name>125896255994392287</Name>
