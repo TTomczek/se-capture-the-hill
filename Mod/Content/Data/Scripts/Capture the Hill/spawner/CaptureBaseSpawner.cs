@@ -141,13 +141,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                 return;
             }
 
-            var freePosition = MyEntities.FindFreePlace(position, 5, 20, 5, 0.1f);
-            if (freePosition == null)
-            {
-                CthLogger.Error($"No free position found for {planetName}-capture-base-{baseType} at {position}.");
-                return;
-            }
-
             var orientation = PositionTools.GetSurfaceOrientation(position, planetCenter);
 
             try
@@ -165,13 +158,13 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
                 MyAPIGateway.PrefabManager.SpawnPrefab(
                     spawnedGrids,
                     prefabSubtypeId,
-                    freePosition.Value,
+                    position,
                     orientation[0],
                     orientation[1],
                     Vector3.Zero,
                     Vector3.Zero,
                     null,
-                    SpawningOptions.None,
+                    SpawningOptions.UseOnlyWorldMatrix,
                     0,
                     true,
                     () => { HandleBaseSpawned(planetName, baseType, spawnedGrids); }

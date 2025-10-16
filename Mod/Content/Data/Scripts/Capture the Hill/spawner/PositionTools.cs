@@ -5,7 +5,6 @@ using CaptureTheHill.logging;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
-using VRage.Game;
 using VRageMath;
 
 namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
@@ -125,9 +124,6 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
             // Wir verwenden das erste Grid als Referenz (bei Mehrfach-Grids nach Bedarf erweitern)
             var gridOb = def.CubeGrids[0];
 
-            // Grid-CubeSize in Metern (Large=2.5, Small=0.5)
-            double cellSize = gridOb.GridSizeEnum == MyCubeSize.Large ? 2.5 : 0.5;
-
             // Unterste Zellenlage (lokal, in Cell-Koordinaten) bestimmen:
             // MyObjectBuilder_CubeBlock.Min ist die minimale Zelle eines (ggf. mehrzelligen) Blocks.
             int minCellY = int.MaxValue;
@@ -145,18 +141,8 @@ namespace CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.spawner
 
             // Oberfläche und Normale anvisieren
             Vector3D surface = planet.GetClosestSurfacePointGlobal(position);
-            Vector3D center = planet.PositionComp.GetPosition();
-            Vector3D up = Vector3D.Normalize(surface - center);
 
-            // Die Y-Achse des Grids wird mit 'up' ausgerichtet.
-            // Ziel: Zentrum der untersten Zelle liegt GENAU auf der Oberfläche -> Block halb im Boden.
-            // Zentrum der untersten Zelle liegt bei (minCellY * cellSize) relativ zur Grid-Origine entlang Up.
-            Vector3D originAtSurface = surface - up * ((minCellY - cellSize) * cellSize);
-
-            // Minimaler numerischer Epsilon-Versatz in den Boden, um Voxel-Schnitt robust zu garantieren (optional)
-            originAtSurface -= up * 0.1;
-
-            return originAtSurface;
+            return surface;
         }
     }
 }

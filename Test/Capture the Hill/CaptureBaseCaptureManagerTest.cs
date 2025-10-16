@@ -4,6 +4,7 @@ using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.config;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.constants;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.logging;
+using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.messaging;
 using CaptureTheHill.Content.Data.Scripts.Capture_the_Hill.state;
 using CaptureTheHill.logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,27 +16,35 @@ using VRage.Game.ModAPI;
 [TestClass]
 public sealed class CaptureBaseCaptureManagerTest
 {
-    [ClassInitialize]
-    public static void ClassInitialize(TestContext context)
+    private Mock<IMyFactionCollection> factionsMock;
+    private Mock<IMyUtilities> utilitiesMock;
+    private Mock<IMyMultiplayer> multiplayerMock;
+    private Mock<IMySession> sessionMock;
+
+    [TestInitialize]
+    public void ClassInitialize()
     {
         ModConfiguration.Instance = new ModConfiguration(groundBaseCaptureTimeInSeconds: 3,
             atmosphereBaseCaptureTimeInSeconds: 3, spaceBaseCaptureTimeInSeconds: 3);
         var loggerMock = new Mock<ICthLogger>();
         CthLogger.CthLoggerInstance = loggerMock.Object;
 
-        var factionsMock = new Mock<IMyFactionCollection>();
+        factionsMock = new Mock<IMyFactionCollection>();
         var faction1 = new Mock<IMyFaction>();
         faction1.Setup(f1 => f1.Name).Returns("TestFaction2");
         faction1.Setup(f1 => f1.Members).Returns(new Dictionary<long, MyFactionMember>
             { { 1, new MyFactionMember() }, { 2, new MyFactionMember() } });
         factionsMock.Setup(f => f.TryGetFactionById(2)).Returns(faction1.Object);
 
-        var utilitiesMock = new Mock<IMyUtilities>();
+        utilitiesMock = new Mock<IMyUtilities>();
         utilitiesMock.Setup(u => u.SerializeToBinary(It.IsAny<object>())).Returns(new byte[0]);
         MyAPIGateway.Utilities = utilitiesMock.Object;
 
         var playersMock = new Mock<IMyPlayerCollection>();
         var playerList = new List<IMyPlayer>();
+        var player1 = new Mock<IMyPlayer>();
+        player1.Setup(p => p.SteamUserId).Returns(1);
+        playerList.Add(player1.Object);
         playersMock.Setup(p => p.GetPlayers(It.IsAny<List<IMyPlayer>>(), It.IsAny<Func<IMyPlayer, bool>>()))
             .Callback<List<IMyPlayer>, Func<IMyPlayer, bool>>((list, predicate) =>
             {
@@ -49,12 +58,12 @@ public sealed class CaptureBaseCaptureManagerTest
             });
         MyAPIGateway.Players = playersMock.Object;
 
-        var multiplayerMock = new Mock<IMyMultiplayer>();
+        multiplayerMock = new Mock<IMyMultiplayer>();
         multiplayerMock.Setup(m =>
             m.SendMessageTo(It.IsAny<ushort>(), It.IsAny<byte[]>(), It.IsAny<ulong>(), It.IsAny<bool>()));
         MyAPIGateway.Multiplayer = multiplayerMock.Object;
 
-        var sessionMock = new Mock<IMySession>();
+        sessionMock = new Mock<IMySession>();
         sessionMock.Setup(s => s.Factions).Returns(factionsMock.Object);
         MyAPIGateway.Session = sessionMock.Object;
     }
@@ -368,5 +377,40 @@ public sealed class CaptureBaseCaptureManagerTest
         Assert.AreEqual(2, base1.PreviousDominatingFaction); // Should remain the same
         Assert.AreEqual(2, base1.CurrentDominatingFaction); // Still being captured by faction 2
         Assert.AreEqual(CaptureBaseFightMode.Defending, base1.FightMode); // Still in defending mode
+    }
+
+    [TestMethod]
+    public void TestShouldNotifyWhenAttackedAfterCapture()
+    {
+        var base1 = new CaptureBaseData
+        {
+            BaseName = "Base1",
+            BaseDisplayName = "Alpha Base",
+            PlanetName = "PlanetA",
+            CaptureBaseType = CaptureBaseType.Atmosphere,
+            CurrentOwningFaction = 2,
+            CurrentDominatingFaction = 1,
+            PreviousDominatingFaction = 2,
+            CaptureProgress = 3,
+            FightMode = CaptureBaseFightMode.Defending,
+            LastNotifiedFaction = 2
+        };
+
+        var basesPerPlanet = new Dictionary<string, List<CaptureBaseData>>
+        {
+            {
+                "PlanetA", new List<CaptureBaseData> { base1 }
+            }
+        };
+
+        CaptureBaseCaptureManager.UpdateBaseCaptureProgress(basesPerPlanet);
+
+        Assert.AreEqual(2, base1.CaptureProgress); // Capture progress decreased by 1
+        Assert.AreEqual(2, base1.CurrentOwningFaction); // Still owned by faction
+        Assert.AreEqual(1, base1.PreviousDominatingFaction); // Set to current dominating faction
+        Assert.AreEqual(1, base1.CurrentDominatingFaction); // Still being attacked by faction 1
+
+        multiplayerMock.Verify(m =>
+            m.SendMessageTo(NetworkChannels.ServerToClient, It.IsAny<byte[]>(), It.IsAny<ulong>(), It.IsAny<bool>()));
     }
 }
